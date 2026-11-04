@@ -18,6 +18,10 @@
       "path": "skills/evaluate-skills"
     },
     {
+      "name": "map-skill-opportunities",
+      "path": "skills/map-skill-opportunities"
+    },
+    {
       "name": "release-skill-sets",
       "path": "skills/release-skill-sets"
     }
