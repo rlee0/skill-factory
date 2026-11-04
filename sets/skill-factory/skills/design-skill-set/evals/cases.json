@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "skill": "design-skill-set",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "design-skill-set-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "We have an approved domain brief and approved opportunity map. Help us decide the skill-set membership, each skill's responsibility and handoffs, runtime assumptions, and which specialist capabilities are actually justified before we start authoring.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes this as architecture design based on approved inputs, rather than restarting discovery or remapping opportunities.",
+        "The agent proposes a focused set architecture with named members, responsibilities, handoffs, runtime assumptions, and a clear distinction between core and justified optional capabilities.",
+        "The agent presents the architecture for user correction and approval before any authoring or packaging begins."
+      ]
+    },
+    {
+      "id": "design-skill-set-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "Here is an approved domain brief. Please turn its recurring workflows into prioritized candidate skills, with triggers, nearby non-triggers, and non-goals.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes that the user is asking for opportunity mapping, not set architecture.",
+        "The agent does not design membership from the brief alone or begin authoring."
+      ]
+    },
+    {
+      "id": "design-skill-set-lean-architecture",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Approved domain brief: a neighborhood food pantry serves walk-in neighbors. Volunteers check people in, record visits, and help neighbors choose available groceries. The goals are shorter waits and respectful service. Constraints: a paper sign-in fallback, limited bilingual coverage, a small storage room, no eligibility decisions by volunteers, and no promises about unconfirmed stock. Approved opportunity map: (1) prepare a check-in and visit-record workflow aid for volunteers; (2) help volunteers communicate confirmed grocery availability and hand off uncertainty to pantry staff. Propose the skill-set architecture for review.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response proposes a small, coherent member set tied to the two approved opportunities, with distinct responsibilities, user-facing boundaries, and any necessary handoff between the skills.",
+        "The response states runtime assumptions conservatively and does not claim a runtime is tested without evidence.",
+        "Optional research, domain-modeling, tool/script, or runtime-specific skills are included only with a case-specific justification; otherwise they are explicitly deferred or omitted.",
+        "The response preserves constraints on eligibility, stock claims, paper fallback, and language coverage, identifies unresolved architecture choices rather than guessing, and asks for architecture approval before authoring or packaging."
+      ]
+    }
+  ]
+}

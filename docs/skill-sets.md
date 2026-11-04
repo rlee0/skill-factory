@@ -8,11 +8,12 @@ Each set owns its source directory:
 sets/<set-name>/
 ├── set.json
 ├── README.md
-├── skills/<skill-name>/SKILL.md
-└── evals/<skill-name>/cases.json
+└── skills/<skill-name>/
+    ├── SKILL.md
+    └── evals/cases.json
 ```
 
-The `SKILL.md` and its optional `scripts/`, `references/`, and `assets/` use the Agent Skills specification. Set metadata belongs in `set.json`; do not add repository-specific required fields to every skill's frontmatter.
+Each skill owns its `evals/cases.json` alongside `SKILL.md` and optional `scripts/`, `references/`, and `assets/`. Skills use the Agent Skills specification. Set metadata belongs in `set.json`; do not add repository-specific required fields to every skill's frontmatter.
 
 The first-party pilot is linked into `.agents/skills/` for local OpenCode discovery. The set directory remains canonical, and release archives contain real skill files rather than symlinks.
 

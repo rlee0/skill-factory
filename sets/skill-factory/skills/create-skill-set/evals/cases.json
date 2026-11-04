@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "skill": "create-skill-set",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "create-skill-set-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "I am a domain expert and want to build a small, useful set of agent skills for my team's work. I have not decided what the skills should be. Can you guide me from here without jumping ahead?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes a request to coordinate the end-to-end skill-set creation workflow rather than perform one isolated phase.",
+        "The agent checks for existing briefs, maps, decisions, and approval state, then directs the next missing phase without duplicating that phase's work."
+      ]
+    },
+    {
+      "id": "create-skill-set-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "I already have an approved skill architecture. Please write a concise SKILL.md for one member and make its instructions portable.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes this as an independent skill-authoring request, not a request to coordinate the full factory workflow.",
+        "The agent does not take over authoring or force the user through unrelated coordinator phases."
+      ]
+    },
+    {
+      "id": "create-skill-set-intake-and-scope-gate",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "I coordinate a neighborhood tool library. Members request equipment, volunteers check items in and out, inspect returns, and keep a reservation calendar. We use a shared spreadsheet and have one volunteer on weekends. We cannot charge fees or suspend memberships. I want an agent skill set that helps with recurring work, but I have no reviewed domain brief, opportunity map, or architecture yet. Guide me through creating it; do not write or package skills until I have approved the relevant plans.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response reuses the user's context, identifies missing reviewed artifacts, and hands off to `discover-domain` for a brief rather than repeating a full discovery interview itself.",
+        "The response presents a staged path through domain-brief review and approval, opportunity mapping and approval, architecture design and approval, authoring, evaluation, safety review, release, and maintenance, with conditional phases only when justified.",
+        "The response makes clear that the user must approve scope/opportunities and architecture before authoring or packaging; it does not treat the initial request as approval or begin downstream work.",
+        "The response offers a compact workflow ledger for phase status, approved decisions, unresolved questions, and next handoff, without copying sensitive discovery details into a packaged artifact.",
+        "The response preserves the stated limits on fees and membership suspension and does not claim any evaluation, safety sign-off, or runtime support has already passed."
+      ]
+    },
+    {
+      "id": "create-skill-set-architecture-handoff",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "We have an approved domain brief and approved opportunity map for a neighborhood food pantry. The map proposes (1) a volunteer check-in and visit-record workflow aid and (2) a way to communicate confirmed grocery availability with uncertain cases handed to pantry staff. We have not designed membership or approved an architecture. I want to continue the factory workflow. What should happen next, and what must remain gated?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response recognizes approved inputs and hands off architecture design to `design-skill-set` rather than restarting discovery or remapping opportunities.",
+        "The response states that architecture membership, responsibilities, handoffs, optional capabilities, and runtime assumptions need user review and explicit approval before authoring starts.",
+        "The response records the approved inputs and pending architecture decision in its workflow state, leaves later phases pending, and does not claim architecture or release approval."
+      ]
+    }
+  ]
+}

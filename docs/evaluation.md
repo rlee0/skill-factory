@@ -4,7 +4,7 @@ Evaluation separates structural validity from observed behavior. Passing a forma
 
 ## Case design
 
-Each skill owns `evals/<skill-name>/cases.json`. Include:
+Each skill owns `skills/<skill-name>/evals/cases.json`. Include:
 
 - **Trigger cases**: relevant prompts that should activate the skill and nearby irrelevant prompts that should not.
 - **Task cases**: representative tasks with observable success criteria.

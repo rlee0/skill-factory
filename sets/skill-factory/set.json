@@ -2,12 +2,20 @@
   "schema_version": 1,
   "name": "skill-factory",
   "version": "0.1.0",
-  "description": "A focused collection for discovering domains, authoring, evaluating, and releasing portable agent skills and skill sets.",
+  "description": "A guided collection for discovering domain work, designing and coordinating tailored skill sets, authoring portable skills, evaluating behavior, and preparing reviewed releases.",
   "license": "Apache-2.0",
   "skills": [
     {
       "name": "author-skills",
       "path": "skills/author-skills"
+    },
+    {
+      "name": "create-skill-set",
+      "path": "skills/create-skill-set"
+    },
+    {
+      "name": "design-skill-set",
+      "path": "skills/design-skill-set"
     },
     {
       "name": "discover-domain",
