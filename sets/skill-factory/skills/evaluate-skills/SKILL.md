@@ -21,7 +21,7 @@ Build evidence for whether a skill activates in the right situations and improve
 
 ## Missing evidence
 
-- Missing runtime/model identity, response/trace, loaded-skill observations, repeats, or task baseline evidence makes the affected result incomplete. Do not interpret absent observations as a negative activation or a passing outcome.
+- Missing runtime/model identity, response/trace, loaded-skill observations, repeats, or task baseline evidence makes the affected result incomplete. When proposing a rerun, explicitly request the full authored case suite (relevant and nearby-irrelevant triggers and tasks), required repeats, treatment/baseline outputs and loaded-skill IDs, and exact runtime/model identity. The task baseline keeps native runtime capabilities while omitting only the candidate set. Do not interpret absent observations as a negative activation or a passing outcome.
 - A format check is not behavioral evidence. Do not fill gaps with inferred values, prior runs, or another runtime's result.
 - Keep the set pending/untested until the evidence is complete. A runtime the runner does not support remains untested; do not create a passing report for it.
 - Do not treat editing evaluation-related prose or fixtures as a request to assess behavior; hand off bounded skill-documentation edits to `author-skills` unless evaluation is also requested.

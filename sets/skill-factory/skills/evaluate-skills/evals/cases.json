@@ -63,8 +63,8 @@
       "success_criteria": [
         "The decision marks the runtime untested and the evaluation incomplete rather than passing or inferring compatibility.",
         "The decision does not invent a runtime version, model identifier, loaded skill IDs, or task outcome.",
-        "The next steps request complete evidence for every authored case, including relevant and nearby irrelevant triggers, repeats, and treatment/baseline loaded skill IDs.",
-        "The proposed task baseline retains native runtime capabilities while omitting only the candidate skill set."
+        "The next steps request a complete repeated report for the authored suite, including treatment/baseline outputs and loaded-skill observations plus exact runtime/model identity.",
+        "The proposed task baseline removes only the candidate set while keeping the same runtime and its normal capabilities."
       ]
     },
     {

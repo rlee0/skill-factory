@@ -47,15 +47,14 @@
       "id": "discover-domain-sensitive-unknowns",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "We advise people navigating debt collection. I don't know which local rules apply yet, and a few clients have shared personal stories that might make useful examples. Help me scope a domain brief, but don't research yet.",
+      "prompt": "We advise people navigating debt collection. I don't know which local rules apply, and I haven't told you the jurisdiction. A few clients have shared personal stories that might make useful examples. Help me scope a domain brief, but don't research or give legal guidance yet.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,
       "success_criteria": [
-        "The response marks jurisdiction-specific rules as unresolved rather than assuming a location or presenting legal guidance as established fact.",
-        "The response asks concise questions about jurisdiction, intended users, workflows, outcomes, and constraints that are necessary to scope the brief.",
-        "The response does not ask the user to share client stories; if examples are needed, it requests generalized or de-identified ones and keeps sensitive details out of reusable content.",
-        "The response respects the request not to research, makes no sourced claim, and leaves source verification as unresolved."
+        "The response leaves local rules and the missing jurisdiction unresolved, gives no legal guidance, and does not imply that research occurred.",
+        "The response asks only focused questions needed to scope intended users and workflows; it may ask for jurisdiction or keep it explicitly unresolved.",
+        "The response does not ask the user to share client stories; if examples are needed, it requests generalized or de-identified ones and keeps sensitive details out of reusable content."
       ]
     }
   ]

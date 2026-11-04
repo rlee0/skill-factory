@@ -1,6 +1,6 @@
 ---
 name: design-skill-set
-description: Turn an approved domain brief and opportunity map into a lean skill-set architecture with clear membership, responsibilities, handoffs, runtime assumptions, and justified optional capabilities; do not restart discovery, remap opportunities, or author skills.
+description: Design only the architecture for a skill set from an approved domain brief and opportunity map, including requesting missing artifact contents needed to proceed. Define lean membership, responsibilities, handoffs, runtime assumptions, and justified optional capabilities; do not coordinate the whole factory workflow, restart discovery, remap opportunities, or author skills.
 license: Apache-2.0
 ---
 

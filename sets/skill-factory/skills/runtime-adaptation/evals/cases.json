@@ -51,7 +51,7 @@
       "repeats": 2,
       "success_criteria": [
         "The decision refuses a tested or universal compatibility claim for Runtime B; an unsupported evaluator and evidence from Runtime A do not establish Runtime B support.",
-        "The decision distinguishes format validation from behavioral evidence and refuses a Runtime A tested claim based on only one behavioral evaluation until all authored cases and required repeats pass with exact runtime/model identity recorded.",
+        "The decision leaves Runtime A untested after one evaluation and requires all authored cases and repeats with exact runtime/model identity before a tested claim.",
         "The evidence plan names the missing Runtime B evaluation as a next step and does not invent versions, models, results, or runtime-specific behavior."
       ]
     }

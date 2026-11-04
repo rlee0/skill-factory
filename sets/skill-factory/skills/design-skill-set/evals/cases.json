@@ -6,14 +6,13 @@
     {
       "id": "design-skill-set-relevant-trigger",
       "kind": "trigger",
-      "prompt": "We have an approved domain brief and approved opportunity map, but their contents are not included in this conversation. Is architecture design the next phase, and what reviewed inputs do you need before proposing membership?",
+      "prompt": "We have an approved domain brief and opportunity map, but their contents are not included in this conversation. I want to work on architecture design only, not coordinate the rest of the factory. Ask for the missing reviewed inputs you need before proposing membership.",
       "expected_activation": true,
       "critical": true,
       "repeats": 3,
       "success_criteria": [
         "The agent recognizes this as a request to enter set-architecture design rather than restart discovery or remap opportunities.",
-        "Because the approved brief and opportunity map are absent from context, the agent requests them or their relevant contents instead of guessing at membership.",
-        "The agent keeps architecture approval ahead of authoring and packaging."
+        "Because the approved brief and opportunity map are absent from context, the agent requests them or their relevant contents instead of guessing at membership."
       ]
     },
     {

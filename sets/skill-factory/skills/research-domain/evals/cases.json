@@ -11,8 +11,8 @@
       "critical": true,
       "repeats": 3,
       "success_criteria": [
-        "The agent recognizes this as deeper source-intensive research, distinct from initial discovery or opportunity mapping.",
-        "The agent asks for the locality or marks it unresolved, identifies a focused research question, and does not imply that it searched or found sources without research access."
+        "The response asks for the jurisdiction and specific research question or claim needed to scope authoritative food-safety sources; it requests only relevant brief details needed to proceed.",
+        "The response states that external research tools are unavailable, makes no sourced claim, and leaves findings unresolved."
       ]
     },
     {

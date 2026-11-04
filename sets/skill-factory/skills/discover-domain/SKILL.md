@@ -21,7 +21,7 @@ Help a domain expert turn what they know about their area into a concise, review
    - known risks, sensitive information, and actions an agent must not take.
 
    Ask only questions that materially improve the brief. If a detail is not essential yet, mark it unresolved instead of blocking progress.
-3. **Resolve consequential gaps.** Identify missing facts that could change the domain scope, safety boundary, or intended users. Ask a small number of specific follow-up questions, explaining why an answer matters when helpful. Do not fill gaps with guesses. If the user cannot answer, retain the uncertainty in the brief.
+3. **Resolve consequential gaps.** Identify missing facts that could change the domain scope, safety boundary, or intended users. For local laws or policies, ask which jurisdiction applies when it materially changes scope, or mark it unresolved if the user cannot provide it or has deferred research. Ask a small number of specific follow-up questions, explaining why an answer matters when helpful. Do not give professional legal guidance or fill gaps with guesses. If the user cannot answer, retain the uncertainty in the brief.
 4. **Track the basis for claims.** Keep four categories distinct:
    - **User-provided:** the user's description or stated local practice; it is not independently verified.
    - **Sourced:** a fact checked against a trustworthy source. For claims that materially affect the brief, prefer a relevant primary source where available and record its name, link, and date. Note which claim it supports.
