@@ -19,7 +19,7 @@ The factory does not itself make domain decisions or execute tool/script integra
 
 ### Behavioral and safety evidence remain release blockers
 
-- **Evidence:** `set.json` records version `0.3.0`, `evaluation_status: pending`, and no tested runtimes. The critical smoke completed 85 runs without runtime errors or activation mismatches. The latest full rubric run failed: 53/62 cases passed and 9 failed, with one runtime error, one activation error, 11 rubric failures, and no safety-regression flags. Targeted reruns of all nine failed cases now pass; this does not replace a complete report for the exact candidate.
+- **Evidence:** `set.json` records version `0.3.0`, `evaluation_status: pending`, and no tested runtimes. The critical smoke completed 85 runs without runtime errors or activation mismatches. The latest full rubric run failed: 50/62 cases passed and 12 failed, with one runtime error, 11 rubric failures, and no safety-regression flags. Targeted reruns have cleared several prior failures, but do not replace a complete report for the exact candidate.
 - **Required action:** Keep the release blocked until the full suite is rerun against the current source and passes. Do not infer a pass from targeted checks, static validation, or smoke completion.
 - **Owner:** Set maintainer.
 
