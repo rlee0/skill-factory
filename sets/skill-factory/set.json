@@ -46,8 +46,8 @@
       "path": "skills/maintain-skill-set"
     },
     {
-      "name": "release-skill-sets",
-      "path": "skills/release-skill-sets"
+      "name": "release-skill-set",
+      "path": "skills/release-skill-set"
     },
     {
       "name": "runtime-adaptation",

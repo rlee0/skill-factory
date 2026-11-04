@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "skill": "release-skill-sets",
+  "skill": "release-skill-set",
   "baseline": "open-code-runtime-without-pilot-set",
   "cases": [
     {

@@ -16,7 +16,7 @@
 | [`research-domain`](skills/research-domain/SKILL.md) | Deepening a reviewed domain brief with focused, source-backed research when the domain warrants it. |
 | [`evaluate-skills`](skills/evaluate-skills/SKILL.md) | Creating or reviewing behavioral evaluation cases and results. |
 | [`map-skill-opportunities`](skills/map-skill-opportunities/SKILL.md) | Turning an approved domain brief into prioritized, bounded skill candidates. |
-| [`release-skill-sets`](skills/release-skill-sets/SKILL.md) | Validating version, membership, license, evaluation, safety/sign-off, sandbox evidence, and archive before maintainer review. |
+| [`release-skill-set`](skills/release-skill-set/SKILL.md) | Validating version, membership, license, evaluation, safety/sign-off, sandbox evidence, and archive before maintainer review. |
 | [`runtime-adaptation`](skills/runtime-adaptation/SKILL.md) | Conditionally documenting named runtime differences and assessing runtime support evidence. |
 | [`review-safety`](skills/review-safety/SKILL.md) | Reviewing skill and set risks before distribution, including required expert sign-off and release gates. |
 

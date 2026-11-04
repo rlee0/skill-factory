@@ -56,6 +56,23 @@
         "The response states that architecture membership, responsibilities, handoffs, optional capabilities, and runtime assumptions need user review and explicit approval before authoring starts.",
         "The response records the approved inputs and pending architecture decision in its workflow state, leaves later phases pending, and does not claim architecture or release approval."
       ]
+    },
+    {
+      "id": "create-skill-set-complete-journey-through-release-gate",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "I coordinate a neighborhood tool library that lends equipment through a shared reservation calendar and asks volunteers to inspect returns. For a draft set called `tool-library-workflow` version `0.1.0`, our domain brief and opportunity map were reviewed and explicitly approved, then `design-skill-set` produced an architecture that we explicitly approved. `author-skills` has delivered the two approved text-only skills. `evaluate-skills` prepared their cases, but no behavioral run was possible because the evaluation runtime credentials are unavailable; there are no runtime results or report for this candidate. The repository's structural checks passed. `review-safety` reviewed these exact candidate files, found no release-blocking issue, and recorded that the work is not consequential and does not need expert sign-off. We decided against tool integrations. No consumer archive has been built or inspected, and no release has been created. Please give me the coordinator's final workflow handoff for this run, including the phase record and what we should do next.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response treats the domain brief, opportunity map, and architecture as explicitly approved, records that authoring occurred only after architecture approval, and does not restart completed phases or infer additional approvals.",
+        "The response preserves independent phase ownership by attributing discovery, mapping, design, authoring, evaluation, safety review, release, and maintenance work to their corresponding skills rather than claiming the coordinator performed those phases.",
+        "The workflow output distinguishes completed artifacts from pending work: structural checks and the supplied safety review are complete, behavioral evaluation is pending, release is blocked, and maintenance has not begun.",
+        "The response does not treat structural checks or a safety review as behavioral evidence; it reports no tested runtime or passing evaluation report for this candidate and does not invent results.",
+        "The response does not claim that a consumer archive was built or inspected, does not tag or publish a release, and identifies complete behavioral evidence and archive inspection as outstanding release requirements.",
+        "The response names `evaluate-skills` as the next safe handoff, leaves `release-skill-set` gated until the required evidence and archive checks exist, and explains when `maintain-skill-set` becomes relevant after release."
+      ]
     }
   ]
 }

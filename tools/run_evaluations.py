@@ -319,6 +319,36 @@ def parse_judgment(
     return treatment, baseline, safety_regression
 
 
+def failed_run_evidence(
+    repeat_number: int,
+    treatment: dict[str, Any],
+    baseline_result: dict[str, Any] | None,
+    activated: bool,
+    judge_status: str | None = None,
+) -> dict[str, Any]:
+    treatment_evidence = treatment.get("evidence_observed") is True
+    baseline_evidence = baseline_result is None or baseline_result.get("evidence_observed") is True
+    return {
+        "repeat": repeat_number,
+        "treatment_status": (
+            treatment["status"] if treatment["status"] != "completed" or treatment_evidence else "missing"
+        ),
+        "treatment_loaded_skill_ids": treatment["loaded_skills"],
+        "activation_passed": activated if treatment_evidence else None,
+        "treatment_scores": None,
+        "baseline_status": (
+            baseline_result["status"] if baseline_result and (
+                baseline_result["status"] != "completed" or baseline_evidence
+            )
+            else "missing" if baseline_result else None
+        ),
+        "baseline_loaded_skill_ids": baseline_result["loaded_skills"] if baseline_result and baseline_evidence else None,
+        "baseline_scores": None,
+        "judge_status": judge_status,
+        "safety_regression": None,
+    }
+
+
 def evaluate_case(
     binary: str,
     model: str,
@@ -345,25 +375,7 @@ def evaluate_case(
             baseline_result and (baseline_result["status"] != "completed" or not baseline_evidence)
         ):
             runtime_errors += 1
-            run_evidence.append({
-                "repeat": repeat_number,
-                "treatment_status": (
-                    treatment["status"] if treatment["status"] != "completed" or treatment_evidence else "missing"
-                ),
-                "treatment_loaded_skill_ids": treatment["loaded_skills"],
-                "activation_passed": activated if treatment_evidence else None,
-                "treatment_scores": None,
-                "baseline_status": (
-                    baseline_result["status"] if baseline_result and (
-                        baseline_result["status"] != "completed" or baseline_evidence
-                    )
-                    else "missing" if baseline_result else None
-                ),
-                "baseline_loaded_skill_ids": baseline_result["loaded_skills"] if baseline_result and baseline_evidence else None,
-                "baseline_scores": None,
-                "judge_status": None,
-                "safety_regression": None,
-            })
+            run_evidence.append(failed_run_evidence(repeat_number, treatment, baseline_result, activated))
             continue
 
         judge_result = execute_once(
@@ -383,21 +395,13 @@ def evaluate_case(
         )
         if judge_result["status"] != "completed" or judge_result.get("evidence_observed") is not True:
             runtime_errors += 1
-            run_evidence.append({
-                "repeat": repeat_number,
-                "treatment_status": treatment["status"],
-                "treatment_loaded_skill_ids": treatment["loaded_skills"],
-                "activation_passed": activated,
-                "treatment_scores": None,
-                "baseline_status": baseline_result["status"] if baseline_result else None,
-                "baseline_loaded_skill_ids": baseline_result["loaded_skills"] if baseline_result else None,
-                "baseline_scores": None,
-                "judge_status": (
-                    judge_result["status"] if judge_result["status"] != "completed"
-                    or judge_result.get("evidence_observed") else "missing"
-                ),
-                "safety_regression": None,
-            })
+            judge_status = (
+                judge_result["status"] if judge_result["status"] != "completed"
+                or judge_result.get("evidence_observed") else "missing"
+            )
+            run_evidence.append(
+                failed_run_evidence(repeat_number, treatment, baseline_result, activated, judge_status)
+            )
             continue
         try:
             treatment_scores, baseline_scores, safety_regression = parse_judgment(
@@ -405,18 +409,9 @@ def evaluate_case(
             )
         except ValueError:
             runtime_errors += 1
-            run_evidence.append({
-                "repeat": repeat_number,
-                "treatment_status": treatment["status"],
-                "treatment_loaded_skill_ids": treatment["loaded_skills"],
-                "activation_passed": activated,
-                "treatment_scores": None,
-                "baseline_status": baseline_result["status"] if baseline_result else None,
-                "baseline_loaded_skill_ids": baseline_result["loaded_skills"] if baseline_result else None,
-                "baseline_scores": None,
-                "judge_status": "invalid-result",
-                "safety_regression": None,
-            })
+            run_evidence.append(
+                failed_run_evidence(repeat_number, treatment, baseline_result, activated, "invalid-result")
+            )
             continue
         baseline_passed = all(baseline_scores) if baseline_scores is not None else None
         rubric_passed = all(treatment_scores)

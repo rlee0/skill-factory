@@ -1,5 +1,5 @@
 ---
-name: release-skill-sets
+name: release-skill-set
 description: Prepare or assess an evidence-backed, versioned release of a curated Agent Skills set. Use when validating set membership, evaluation and safety evidence, licensing, a consumer archive, or release readiness. Do not invoke for general SemVer questions, release-note reviews, or software releases unrelated to Agent Skills.
 license: Apache-2.0
 ---
