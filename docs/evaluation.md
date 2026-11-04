@@ -16,7 +16,7 @@ Use realistic, safe prompts. Keep the task and rubric in the case file; do not e
 
 ## Runtime evidence
 
-Evaluate each runtime a set claims as tested. Record the runtime version, model identifier, case results, repeats, and overall status in `reports/<version>.json`. Model choices may vary, but every result must identify the exact model used. Never infer compatibility for an untested runtime.
+Evaluate each runtime a set claims as tested. Record the runtime version, model identifier, case results, repeats, and overall status in `reports/<version>.json`. Model choices may vary, but every result must identify the exact model used. Never infer compatibility for an untested runtime. For a concrete runtime-specific requirement, document the difference and its source while keeping portable Agent Skills behavior as the default; target status, format validation, and evidence from another runtime do not establish tested support.
 
 The pilot currently targets OpenCode, but `tested_runtimes` remains empty until complete evidence is reviewed. The checked-in v0.1.0 report has a generated timestamp later than the repository's current date and does not cover the current complete fixture set; it is not evidence for the current sources or a release claim. The local runner retains traces for manual review; CI emits sanitized case scores and repeat-level skill observations while raw traces remain in temporary workspaces. Behavioral CI runs affected skills with `opencode/gpt-6-luna`; update runtime claims and release reports only after reviewing complete evidence.
 

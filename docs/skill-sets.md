@@ -27,6 +27,6 @@ The set README is the human-readable overview. Set names and skill names use low
 
 ## Compatibility and licensing
 
-Sets target portable Agent Skills directories. Runtime-specific behavior is allowed only when documented. State a runtime as tested only when its exact version and model are recorded in a passing evaluation report.
+Sets target portable Agent Skills directories by default. Add runtime-specific behavior only for a concrete need tied to a named runtime, and document the difference, its source, and its effect. Keep target runtimes distinct from tested runtimes: state a runtime as tested only when complete, passing behavioral results for its exact version and model are recorded in an evaluation report. A format check or another runtime's result is not evidence of compatibility; unsupported and unevaluated runtimes remain untested.
 
 Apache-2.0 is the default set license. A set may override it by bundling a set-local `LICENSE`. A skill may override the set default by naming a license file bundled inside that skill directory. The effective license must be explicit before public release; the consumer archive includes the set license and all member skill files.
