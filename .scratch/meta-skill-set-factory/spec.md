@@ -94,6 +94,6 @@ The factory will produce a lean core and add optional capabilities only when the
 
 ## Further Notes
 
-- At spec creation, the skill-factory README conflicted with the descriptor and evaluation report about OpenCode testing; the implementation reconciled the README with the pending current set. The historical 0.1.0 report's generated timestamp is later than the repository's stated current date and does not cover the current complete fixture set. Tool-using workflows still require separate sandboxed evaluation before support or release claims.
+- At spec creation, the skill-factory README conflicted with the descriptor and evaluation report about OpenCode testing; the implementation reconciled the README with the pending current set. The 0.1.0 report is historical and does not cover the current complete fixture set. Tool-using workflows still require separate sandboxed evaluation before support or release claims.
 - The agreed behavioral seam is coordinator end-to-end evaluation plus independent phase-skill evaluation through the real runtime, with structural validation and archive inspection as separate checks.
 - The domain vocabulary in this spec follows the repository glossary: skill, skill set, set release, evaluation case, runtime baseline, and runtime matrix.

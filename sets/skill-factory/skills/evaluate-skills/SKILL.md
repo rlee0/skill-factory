@@ -1,6 +1,6 @@
 ---
 name: evaluate-skills
-description: Design or review evaluations for agent skills. Use when checking skill activation, comparing task outcomes against a runtime baseline without the candidate set, defining critical scenarios, or recording runtime and model evidence.
+description: Design or review behavioral evaluations and runtime evidence for agent skills. Use when asked to assess skill activation or task outcomes, compare runs against a runtime baseline, or plan or record evaluation results. Do not use for editing skill documentation, evaluation policy, or case wording unless behavioral evaluation is also requested; use author-skills for skill documentation.
 license: Apache-2.0
 ---
 
@@ -24,6 +24,7 @@ Build evidence for whether a skill activates in the right situations and improve
 - Missing runtime/model identity, response/trace, loaded-skill observations, repeats, or task baseline evidence makes the affected result incomplete. Do not interpret absent observations as a negative activation or a passing outcome.
 - A format check is not behavioral evidence. Do not fill gaps with inferred values, prior runs, or another runtime's result.
 - Keep the set pending/untested until the evidence is complete. A runtime the runner does not support remains untested; do not create a passing report for it.
+- Do not treat editing evaluation-related prose or fixtures as a request to assess behavior; hand off bounded skill-documentation edits to `author-skills` unless evaluation is also requested.
 
 ## Completion criteria
 

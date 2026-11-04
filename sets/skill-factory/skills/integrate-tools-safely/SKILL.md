@@ -1,6 +1,6 @@
 ---
 name: integrate-tools-safely
-description: Design and review an approved skill's tool or script integration when its authorized capabilities, permissions, credentials, runtime assumptions, and safe evaluation path need to be specified. Use before implementing a justified integration; do not use for ordinary coding or to bypass access controls.
+description: Design or review a proposed skill's tool or script integration, including its authorized capabilities, permissions, credentials, runtime assumptions, safe failure behavior, and evaluation path. Use when shaping or assessing an integration before implementation; not for ordinary coding or bypassing access controls.
 license: Apache-2.0
 ---
 

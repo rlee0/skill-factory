@@ -45,7 +45,7 @@
       "id": "maintain-skill-set-independent-semver",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "A skill set is at version `2.4.1`. The proposed changes add a compatible `meeting-notes` skill and correct a wording error in `agenda-builder`; the set's existing behavior and membership remain compatible. Separately, another set in the same repository is unchanged. Recommend version and descriptor/README/report handling.",
+      "prompt": "An already-released skill set is at version `2.4.1`. We are only planning maintenance for proposed changes: add a compatible `meeting-notes` skill and correct a wording error in `agenda-builder`; existing behavior and membership remain compatible. Another set in the repository is unchanged. No release candidate is prepared, and I am not asking for release-readiness review or packaging. Recommend the version and maintenance updates for the changed set.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,

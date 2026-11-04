@@ -1,6 +1,6 @@
 ---
 name: maintain-skill-set
-description: Maintain an already released agent skill set as its skills, sources, domains, or runtimes change. Use to assess change impact, choose re-evaluation and independent set-version updates, manage runtime evidence, or plan skill deprecation and retirement.
+description: "Assess proposed changes to an already released agent skill set: map impact, plan re-evaluation, recommend independent SemVer, maintain runtime evidence, or deprecate/retire skills. Use for maintenance planning before a release candidate is ready; not for validating a candidate's release readiness (use release-skill-set)."
 license: Apache-2.0
 ---
 
