@@ -8,6 +8,7 @@
 | --- | --- |
 | [`author-skills`](skills/author-skills/SKILL.md) | Designing or writing an Agent Skills-format skill. |
 | [`discover-domain`](skills/discover-domain/SKILL.md) | Eliciting and reviewing the users, workflows, constraints, risks, and open questions behind a domain brief. |
+| [`research-domain`](skills/research-domain/SKILL.md) | Deepening a reviewed domain brief with focused, source-backed research when the domain warrants it. |
 | [`evaluate-skills`](skills/evaluate-skills/SKILL.md) | Creating or reviewing behavioral evaluation cases and results. |
 | [`release-skill-sets`](skills/release-skill-sets/SKILL.md) | Preparing a versioned, evaluated set for distribution. |
 
