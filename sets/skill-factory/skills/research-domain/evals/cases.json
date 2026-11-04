@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "skill": "research-domain",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "research-domain-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "We have an approved domain brief for a community garden volunteer program. Deepen it with cited, trustworthy sources about food-safety guidance that could affect the proposed skills, and keep the evidence and open questions reviewable.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes this as deeper source-intensive domain research, distinct from initial domain discovery or skill opportunity mapping.",
+        "The agent narrows the research to a focused question and identifies any material scope needed, such as location or applicable time period, rather than searching broadly."
+      ]
+    },
+    {
+      "id": "research-domain-source-provenance",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Our approved brief is for a community garden where volunteers grow produce for local food banks. Research whether there is source-backed food-safety guidance that should change volunteer instructions for handling harvested produce. Focus on the local public-health authority and other relevant primary sources where available. Return only findings that matter to designing the skill set, with an evidence trail and unresolved questions.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response defines a focused question and asks for or marks a location as unresolved if locality changes which sources apply.",
+        "The response prefers relevant primary sources where available and records enough source provenance to check each material claim, including source title, publisher, URL, relevant publication or update date when available, and access date.",
+        "The response connects each used source to the specific finding it supports and distinguishes source-backed findings from user-provided context, interpretation, and unresolved questions.",
+        "The response avoids inventing sources or claims, keeps research scoped to decisions that affect the proposed skills, and does not imply qualified food-safety or professional certification."
+      ]
+    },
+    {
+      "id": "research-domain-conflict-and-uncertainty",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Our approved community-garden brief has two user-provided, conflicting claims about how long harvested produce can safely remain unrefrigerated before volunteers must cool it. We have no source links or publication dates, and haven't said which city the garden is in. Research what should go into the volunteer skill instructions.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response treats both statements as unverified user-provided claims, identifies that the location may determine applicable guidance, and asks for it or marks it unresolved before claiming local applicability.",
+        "The response states a focused research question and seeks authoritative, in-scope evidence; it does not silently choose between conflicting claims or make up provenance for the missing sources.",
+        "The response separates any findings, interpretation, and unresolved conflict, noting source authority, scope, and recency limits where known.",
+        "The response does not provide professional food-safety certification and flags qualified review before consequential instructions are packaged."
+      ]
+    },
+    {
+      "id": "research-domain-routine-discovery-non-trigger",
+      "kind": "trigger",
+      "prompt": "We have an approved brief for a local arts club. Without using external sources, help us summarize which user workflows still need clarification before we map skill opportunities.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes this as brief review and workflow clarification, not deeper source-intensive research.",
+        "The agent respects the explicit request not to use external sources and does not invent sourced findings or start a research memo."
+      ]
+    }
+  ]
+}
