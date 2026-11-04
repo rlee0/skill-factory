@@ -105,6 +105,90 @@ class ConfigureWorkspaceTests(unittest.TestCase):
         self.assertEqual(1, result["runtime_errors"])
         self.assertEqual("missing", result["run_evidence"][0]["treatment_status"])
 
+    def test_failed_runs_preserve_evidence_shape_and_path_specific_status(self) -> None:
+        case = {
+            "id": "task-case",
+            "kind": "task",
+            "prompt": "Do the task",
+            "expected_activation": True,
+            "critical": True,
+            "repeats": 1,
+            "comparison_policy": "no-regression",
+            "success_criteria": ["criterion"],
+        }
+        treatment = {
+            "status": "completed",
+            "evidence_observed": True,
+            "loaded_skills": ["target"],
+            "stdout": "answer",
+        }
+        baseline = {
+            "status": "completed",
+            "evidence_observed": True,
+            "loaded_skills": ["native-skill"],
+            "stdout": "baseline answer",
+        }
+        failed_paths = [
+            (
+                [
+                    {**treatment, "status": "runtime-error", "evidence_observed": False},
+                    baseline,
+                ],
+                "runtime-error",
+                None,
+            ),
+            (
+                [treatment, baseline, {"status": "runtime-error", "evidence_observed": False}],
+                "completed",
+                "runtime-error",
+            ),
+            (
+                [
+                    treatment,
+                    baseline,
+                    {
+                        "status": "completed",
+                        "evidence_observed": True,
+                        "loaded_skills": [],
+                        "stdout": json.dumps({"type": "text", "part": {"text": "not json"}}),
+                    },
+                ],
+                "completed",
+                "invalid-result",
+            ),
+        ]
+        expected_fields = {
+            "repeat",
+            "treatment_status",
+            "treatment_loaded_skill_ids",
+            "activation_passed",
+            "treatment_scores",
+            "baseline_status",
+            "baseline_loaded_skill_ids",
+            "baseline_scores",
+            "judge_status",
+            "safety_regression",
+        }
+
+        for responses, treatment_status, judge_status in failed_paths:
+            with self.subTest(treatment_status=treatment_status, judge_status=judge_status):
+                with patch("tools.run_evaluations.execute_once", side_effect=responses):
+                    result = evaluate_case(
+                        "opencode", "model-id", "target", case, Path("set"), [], 1, Path("source")
+                    )
+
+                evidence = result["run_evidence"][0]
+                self.assertEqual("failed", result["status"])
+                self.assertEqual(1, result["runtime_errors"])
+                self.assertEqual(expected_fields, set(evidence))
+                self.assertEqual(treatment_status, evidence["treatment_status"])
+                self.assertEqual(judge_status, evidence["judge_status"])
+                self.assertEqual(["target"], evidence["treatment_loaded_skill_ids"])
+                self.assertEqual(["native-skill"], evidence["baseline_loaded_skill_ids"])
+                self.assertEqual("completed", evidence["baseline_status"])
+                self.assertIsNone(evidence["treatment_scores"])
+                self.assertIsNone(evidence["baseline_scores"])
+
     def test_changed_skill_files_select_only_their_member(self) -> None:
         descriptor = {"skills": [
             {"name": "alpha", "path": "skills/alpha"},

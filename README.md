@@ -25,7 +25,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 - `map-skill-opportunities` — derive and prioritize bounded skill candidates.
 - `maintain-skill-set` — assess post-release changes, evidence, versioning, deprecation, and retirement.
 - `research-domain` — deepen a domain brief with focused, trustworthy sources.
-- `release-skill-sets` — prepare a versioned set release.
+- `release-skill-set` — prepare a versioned set release.
 - `runtime-adaptation` — conditionally document named runtime differences and assess runtime support evidence.
 - `review-safety` — review safety and security risks, require expert sign-off for consequential use, and enforce release gates.
 

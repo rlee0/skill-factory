@@ -111,8 +111,8 @@ class ValidateReportTests(unittest.TestCase):
         report = report_document()
         irrelevant = next(case for case in report["runtimes"][0]["cases"] if case["id"] == "release-set-unrelated-trigger")
         irrelevant["runs_with_target_skill"] = 1
-        irrelevant["loaded_skill_ids"] = ["release-skill-sets"]
-        irrelevant["run_evidence"][0]["treatment_loaded_skill_ids"] = ["release-skill-sets"]
+        irrelevant["loaded_skill_ids"] = ["release-skill-set"]
+        irrelevant["run_evidence"][0]["treatment_loaded_skill_ids"] = ["release-skill-set"]
         irrelevant["run_evidence"][0]["activation_passed"] = False
         errors = self.validate(report)
         self.assertTrue(any("false activation" in error for error in errors))
