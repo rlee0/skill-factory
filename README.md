@@ -13,7 +13,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 
 ## First-party pilot
 
-[`sets/skill-factory/`](sets/skill-factory/) contains twelve focused skills:
+[`sets/skill-factory/`](sets/skill-factory/) contains thirteen focused skills:
 
 - `author-skills` — author or revise a portable skill from an approved design, independently of the coordinator.
 - `create-skill-set` — coordinate the factory workflow, approval gates, and phase handoffs.
@@ -23,12 +23,13 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 - `evaluate-skills` — define and assess activation and task outcomes.
 - `integrate-tools-safely` — design authorized tool/script integrations with least privilege and sandboxed evaluation gates.
 - `map-skill-opportunities` — derive and prioritize bounded skill candidates.
+- `maintain-skill-set` — assess post-release changes, evidence, versioning, deprecation, and retirement.
 - `research-domain` — deepen a domain brief with focused, trustworthy sources.
 - `release-skill-sets` — prepare a versioned set release.
 - `runtime-adaptation` — conditionally document named runtime differences and assess runtime support evidence.
 - `review-safety` — review safety and security risks, require expert sign-off for consequential use, and enforce release gates.
 
-The pilot currently targets OpenCode, but the current `0.2.0` set is pending behavioral evaluation and has no tested runtimes. The checked-in `0.1.0` report is historical and does not cover the current complete fixture set. Evaluation infrastructure and repository checks do not establish tested-runtime support or replace the release gates. See the [evaluation protocol](docs/evaluation.md); do not make a tested-runtime claim until complete evidence for the current version is reviewed.
+The pilot currently targets OpenCode, but the current `0.3.0` set is pending behavioral evaluation and has no tested runtimes. The checked-in `0.1.0` report is historical and does not cover the current complete fixture set. Evaluation infrastructure and repository checks do not establish tested-runtime support or replace the release gates. See the [evaluation protocol](docs/evaluation.md); do not make a tested-runtime claim until complete evidence for the current version is reviewed.
 
 The pilot skills are linked into `.agents/skills/` for local OpenCode discovery. Set sources remain canonical under `sets/skill-factory/`.
 
