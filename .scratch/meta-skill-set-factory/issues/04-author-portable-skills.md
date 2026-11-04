@@ -4,11 +4,15 @@
 
 **Blocked by:** 03: Design the set and guide the factory workflow.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Define each skill's purpose, activation cues, boundaries, instructions, and completion criteria from the approved design.
-- [ ] Keep runtime-specific behavior and environment requirements explicit; do not claim untested compatibility.
-- [ ] Create supporting resources only when they materially improve the skill and inspect them for safety and sensitive information.
-- [ ] Preserve an explicit effective license and avoid repository-specific required metadata in skill frontmatter.
-- [ ] Include evaluation cases for authoring quality, portability, scope boundaries, and nearby irrelevant requests.
-- [ ] Keep the authoring capability independently usable.
+- [x] Define each skill's purpose, activation cues, boundaries, instructions, and completion criteria from the approved design.
+- [x] Keep runtime-specific behavior and environment requirements explicit; do not claim untested compatibility.
+- [x] Create supporting resources only when they materially improve the skill and inspect them for safety and sensitive information.
+- [x] Preserve an explicit effective license and avoid repository-specific required metadata in skill frontmatter.
+- [x] Include evaluation cases for authoring quality, portability, scope boundaries, and nearby irrelevant requests.
+- [x] Keep the authoring capability independently usable.
+
+## Comments
+
+- Implemented in commit `425e1cf`; fast-forwarded into the integration branch. Repository check and all 16 unit tests passed; `skills-ref` was unavailable, so only basic frontmatter validation ran. Behavioral evaluations were not run.
