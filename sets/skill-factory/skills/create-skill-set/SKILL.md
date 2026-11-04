@@ -1,6 +1,6 @@
 ---
 name: create-skill-set
-description: Coordinate a domain expert through the approved phases for creating and maintaining an evidence-backed agent skill set, tracking decisions, approvals, unresolved questions, and handoffs without duplicating phase skills.
+description: Use only when a domain expert explicitly asks to be guided from an initial idea through multiple factory phases, to coordinate those phases, or to determine the next safe handoff while tracking approvals. Do not use for a single bounded phase or merely because a request mentions a skill set; route standalone authoring, evaluation, safety, or release to its phase skill.
 license: Apache-2.0
 ---
 
@@ -41,7 +41,11 @@ Keep a compact workflow ledger in the conversation and, when useful, offer it as
 | Domain brief | Not started / in progress / awaiting review / approved | Scope and unresolved items | `discover-domain` or `map-skill-opportunities` |
 | Opportunity map | Not started / in progress / awaiting review / approved | Accepted, deferred, or rejected candidates | `map-skill-opportunities` or `design-skill-set` |
 | Architecture | Not started / in progress / awaiting review / approved | Membership and open design choices | `design-skill-set` or `author-skills` |
-| Skills, evaluations, safety, release, maintenance | Not started / in progress / blocked / complete | Evidence and outstanding gates | Corresponding phase skill |
+| Skills | Not started / in progress / blocked / complete | Approved members and authoring state | `author-skills` |
+| Evaluations | Not started / in progress / blocked / complete | Cases, runtime evidence, and open failures | `evaluate-skills` |
+| Safety | Not started / in progress / blocked / complete | Risk findings, mitigations, and required sign-off | `review-safety` |
+| Release | Not started / in progress / blocked / complete | Version, evidence, license, archive, and maintainer review | `release-skill-set` |
+| Maintenance | Not started / in progress / blocked / complete | Post-release impact, re-evaluation, versioning, deprecation, or retirement | `maintain-skill-set` |
 
 Use “approved” only after the user explicitly approves that artifact. Preserve accepted decisions and unresolved questions across handoffs, and identify when a new decision supersedes an earlier one. If scope changes, return to the affected approval gate instead of carrying the old approval forward.
 

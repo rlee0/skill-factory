@@ -11,14 +11,14 @@
       "critical": true,
       "repeats": 3,
       "success_criteria": [
-        "The agent recognizes a request to coordinate the end-to-end skill-set creation workflow rather than perform one isolated phase.",
-        "The agent identifies domain discovery as the next missing phase and does not begin architecture, authoring, or packaging before a brief and later approvals exist."
+        "The agent recognizes a factory-coordination request, identifies the missing brief/map/architecture, and names domain discovery as the next phase.",
+        "The response does not infer approval or begin architecture, authoring, or packaging before the required earlier artifacts are reviewed."
       ]
     },
     {
       "id": "create-skill-set-nearby-irrelevant-trigger",
       "kind": "trigger",
-      "prompt": "I already have an approved skill architecture. Please write a concise SKILL.md for one member and make its instructions portable.",
+      "prompt": "I already have an approved skill architecture. Please write a concise SKILL.md for one member and make its instructions portable. This is a single-phase authoring request; do not coordinate the rest of the factory workflow.",
       "expected_activation": false,
       "critical": false,
       "repeats": 2,
