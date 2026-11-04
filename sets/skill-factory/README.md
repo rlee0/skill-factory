@@ -15,6 +15,7 @@
 | [`evaluate-skills`](skills/evaluate-skills/SKILL.md) | Creating or reviewing behavioral evaluation cases and results. |
 | [`map-skill-opportunities`](skills/map-skill-opportunities/SKILL.md) | Turning an approved domain brief into prioritized, bounded skill candidates. |
 | [`release-skill-sets`](skills/release-skill-sets/SKILL.md) | Preparing a versioned, evaluated set for distribution. |
+| [`runtime-adaptation`](skills/runtime-adaptation/SKILL.md) | Conditionally documenting named runtime differences and assessing runtime support evidence. |
 | [`review-safety`](skills/review-safety/SKILL.md) | Reviewing skill and set risks before distribution, including required expert sign-off and release gates. |
 
 **Version:** `0.1.0` (pre-release)
