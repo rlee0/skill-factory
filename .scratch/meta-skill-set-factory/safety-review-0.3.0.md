@@ -1,9 +1,9 @@
 # Safety review: skill-factory 0.3.0
 
-**Candidate:** `skill-factory` 0.3.0, source commit `8d51364`
+**Candidate:** `skill-factory` 0.3.0, source commit `4498e16`
 **Review date:** 2026-11-04
 **Review scope:** All 13 member `SKILL.md` files and evaluation cases, the set descriptor, README, and effective Apache-2.0 license. No scripts, bundled assets, or other skill resources are present. The local `.agents/skills/` entries are discovery links to canonical sources, not additional packaged content.
-**Review method:** Static review of candidate instructions and cases, plus review of the critical smoke manifest and full rubric results. No unreviewed code was executed.
+**Review method:** Static review of candidate instructions and cases, critical smoke, full rubric results, and targeted reruns of the safety-flagged cases. No unreviewed code was executed.
 
 ## Risk rating: Moderate
 
@@ -19,8 +19,8 @@ The factory does not itself make domain decisions or execute tool/script integra
 
 ### Behavioral and safety evidence remain release blockers
 
-- **Evidence:** `set.json` records version `0.3.0`, `evaluation_status: pending`, and no tested runtimes. The critical smoke completed 85 runs without runtime errors or activation mismatches. The full rubric evaluation failed: 42/62 cases passed, 20 failed, with one runtime error, 34 rubric failures, and two safety-regression flags. The flags concern `evaluate-skills/evaluate-skill-release-safety-gates` and `review-safety/review-safety-expert-signoff-and-regression-gate`. The CI run retained no raw traces; the local smoke responses reviewed did not visibly expose sensitive data or weaken the urgent-care safeguard, but they do not clear the CI flags.
-- **Required action:** Keep the release blocked. Review the two safety flags against targeted local evidence, address or explain them, fix the critical rubric failures, and rerun the full suite. Do not infer a pass from static validation or smoke completion.
+- **Evidence:** `set.json` records version `0.3.0`, `evaluation_status: pending`, and no tested runtimes. The critical smoke completed 85 runs without runtime errors or activation mismatches. The first full rubric evaluation failed: 42/62 cases passed, 20 failed, with one runtime error, 34 rubric failures, and two safety-regression flags. After clarifying judge context, targeted reruns passed `evaluate-skills/evaluate-skill-release-safety-gates` twice and `review-safety/review-safety-expert-signoff-and-regression-gate` three times, with no safety-regression flags. The targeted reruns do not replace a complete report for the candidate.
+- **Required action:** Keep the release blocked. Rerun the full suite with the corrected judge prompt, resolve remaining rubric/runtime failures, and review the complete report. Do not infer a pass from targeted checks, static validation, or smoke completion.
 - **Owner:** Set maintainer.
 
 ### Conditional gates for downstream use
@@ -30,4 +30,4 @@ The factory does not itself make domain decisions or execute tool/script integra
 
 ## Decision
 
-No static safety issue was identified in the skill contents, but the automated full evaluation has two unresolved safety-regression flags. **Release is blocked** until those flags and all critical evaluation failures are resolved, the full report passes, and the archive and remaining release gates are reviewed. Re-review this exact candidate if its contents change.
+No static safety issue was identified in the skill contents, and targeted reruns cleared the two earlier safety-regression flags. **Release is still blocked:** the full suite has not been rerun after the judge change, and the previous full evaluation had 20 failing cases. Re-review this exact candidate if its contents change.
