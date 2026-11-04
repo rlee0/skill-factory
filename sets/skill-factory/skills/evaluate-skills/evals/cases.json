@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "skill": "evaluate-skills",
+  "baseline": "open-code-runtime-without-pilot-set",
+  "cases": [
+    {
+      "id": "evaluate-skill-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Design tests to find out whether this skill activates on the right requests and actually improves the result.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent creates or reviews a behavioral evaluation plan rather than only linting the skill file.",
+        "The plan covers both activation and task outcomes."
+      ]
+    },
+    {
+      "id": "evaluate-skill-unrelated-trigger",
+      "kind": "trigger",
+      "prompt": "Rewrite this skill's description to be shorter; do not evaluate its behavior.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": [
+        "The agent does not claim evaluation results or create a behavioral report without being asked."
+      ]
+    },
+    {
+      "id": "evaluate-skill-comparable-baseline",
+      "kind": "task",
+      "prompt": "Create an evaluation plan for a skill that generates migration checklists. Compare it with and without the skill and make critical failures visible.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The plan includes relevant and irrelevant trigger cases and representative migration tasks.",
+        "The same tasks are compared with and without the skill where practical.",
+        "Critical cases, repeat counts, exact runtime/model recording, and a release-blocking rule are defined."
+      ]
+    }
+  ]
+}

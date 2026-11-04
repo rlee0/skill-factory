@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "skill-factory",
+  "version": "0.1.0",
+  "description": "A focused collection for authoring, evaluating, and releasing portable agent skills and skill sets.",
+  "license": "Apache-2.0",
+  "skills": [
+    {
+      "name": "author-skills",
+      "path": "skills/author-skills"
+    },
+    {
+      "name": "evaluate-skills",
+      "path": "skills/evaluate-skills"
+    },
+    {
+      "name": "release-skill-sets",
+      "path": "skills/release-skill-sets"
+    }
+  ],
+  "target_runtimes": [
+    "OpenCode"
+  ],
+  "tested_runtimes": [
+    "OpenCode"
+  ],
+  "evaluation_status": "passed"
+}

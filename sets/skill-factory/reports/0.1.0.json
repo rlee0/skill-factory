@@ -1,0 +1,161 @@
+{
+  "set": "skill-factory",
+  "version": "0.1.0",
+  "status": "passed",
+  "generated_at": "2026-11-04T05:39:27.429130+00:00",
+  "source_digest_sha256": "a4612a6823544c78f8ec1ed88ffb5b2020cd6e1daa1ae8952581898f854a12ad",
+  "baseline_definition": "OpenCode runtime without the pilot set; OpenCode-provided skills remain available and are recorded.",
+  "review_method": "Manual rubric review of skill traces and paired task outputs; no model judge.",
+  "limitations": [
+    "One runtime and model were evaluated: OpenCode v2.2.5 with opencode/gpt-6-luna.",
+    "Shell and execute tools were denied; results cover skill activation and text-based tasks, not tool-using workflows.",
+    "The evaluator task's targeted-uplift judgment is qualitative and should be recalibrated with future held-out cases."
+  ],
+  "evidence_run_directories": [
+    "evaluation-runs/skill-factory/20261104T050925469573Z-opencode",
+    "evaluation-runs/skill-factory/20261104T052750679246Z-opencode",
+    "evaluation-runs/skill-factory/20261104T053611450819Z-opencode"
+  ],
+  "runtimes": [
+    {
+      "name": "OpenCode",
+      "version": "opencode v2.2.5",
+      "model": "opencode/gpt-6-luna",
+      "status": "passed",
+      "cases": [
+        {
+          "id": "author-skill-relevant-trigger",
+          "status": "passed",
+          "critical": true,
+          "safety_regression": false,
+          "expected_activation": true,
+          "runs_with_target_skill": 3,
+          "loaded_skill_ids": [
+            "author-skills"
+          ],
+          "repeats": 3,
+          "review_rationale": "The authoring skill loaded in all three relevant-trigger runs and proposed a focused skill boundary and observable result."
+        },
+        {
+          "id": "author-skill-unrelated-trigger",
+          "status": "passed",
+          "critical": false,
+          "safety_regression": false,
+          "expected_activation": false,
+          "runs_with_target_skill": 0,
+          "loaded_skill_ids": [
+            "code-review"
+          ],
+          "repeats": 1,
+          "review_rationale": "The requested code-review skill loaded; author-skills did not activate for execution of an existing skill."
+        },
+        {
+          "id": "author-skill-usable-instructions",
+          "status": "passed",
+          "critical": true,
+          "safety_regression": false,
+          "expected_activation": true,
+          "runs_with_target_skill": 2,
+          "loaded_skill_ids": [
+            "author-skills"
+          ],
+          "repeats": 2,
+          "review_rationale": "Both conditions produced a valid release-note skill covering user impact, version impact, and verification; the skill-enabled result did not regress and supplied a clear review format.",
+          "baseline_repeats": 2,
+          "baseline_loaded_skill_ids": [
+            "skill-creator"
+          ]
+        },
+        {
+          "id": "evaluate-skill-relevant-trigger",
+          "status": "passed",
+          "critical": true,
+          "safety_regression": false,
+          "expected_activation": true,
+          "runs_with_target_skill": 3,
+          "loaded_skill_ids": [
+            "evaluate-skills"
+          ],
+          "repeats": 3,
+          "review_rationale": "The evaluation skill loaded in all three relevant-trigger runs and addressed activation and task outcomes."
+        },
+        {
+          "id": "evaluate-skill-unrelated-trigger",
+          "status": "passed",
+          "critical": false,
+          "safety_regression": false,
+          "expected_activation": false,
+          "runs_with_target_skill": 0,
+          "loaded_skill_ids": [
+            "author-skills"
+          ],
+          "repeats": 1,
+          "review_rationale": "The evaluation skill did not load for a description-edit request; author-skills was the runtime-selected skill, and no evaluation result was claimed."
+        },
+        {
+          "id": "evaluate-skill-comparable-baseline",
+          "status": "passed",
+          "critical": true,
+          "safety_regression": false,
+          "expected_activation": true,
+          "runs_with_target_skill": 2,
+          "loaded_skill_ids": [
+            "evaluate-skills"
+          ],
+          "repeats": 2,
+          "review_rationale": "The skill-enabled plan supplied concrete migration-specific cases and critical gates; the runtime baseline was broader but less specific. This meets the targeted-uplift criterion.",
+          "baseline_repeats": 2,
+          "baseline_loaded_skill_ids": [
+            "opencode"
+          ]
+        },
+        {
+          "id": "release-set-relevant-trigger",
+          "status": "passed",
+          "critical": true,
+          "safety_regression": false,
+          "expected_activation": true,
+          "runs_with_target_skill": 3,
+          "loaded_skill_ids": [
+            "release-skill-sets"
+          ],
+          "repeats": 3,
+          "review_rationale": "The skill used the supplied set metadata and passing evidence, named the expected tag, and prepared a maintainer handoff without claiming publication."
+        },
+        {
+          "id": "release-set-unrelated-trigger",
+          "status": "passed",
+          "critical": false,
+          "safety_regression": false,
+          "expected_activation": false,
+          "runs_with_target_skill": 0,
+          "loaded_skill_ids": [],
+          "repeats": 1,
+          "review_rationale": "The release skill did not load for a general SemVer explanation after its description was narrowed."
+        },
+        {
+          "id": "release-set-blocked-by-critical-failure",
+          "status": "passed",
+          "critical": true,
+          "safety_regression": false,
+          "expected_activation": true,
+          "runs_with_target_skill": 2,
+          "loaded_skill_ids": [
+            "release-skill-sets"
+          ],
+          "repeats": 2,
+          "review_rationale": "Both conditions blocked release on the critical failure; the skill-enabled response also avoided creating a tag or draft release.",
+          "baseline_repeats": 2,
+          "baseline_loaded_skill_ids": [
+            "benchmark",
+            "prepare-release",
+            "release",
+            "release-management",
+            "set-release",
+            "software-release"
+          ]
+        }
+      ]
+    }
+  ]
+}

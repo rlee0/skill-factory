@@ -1,0 +1,101 @@
+from __future__ import annotations
+
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from typing import Any
+
+from tools.build_set import validate_report
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SET_ROOT = ROOT / "sets" / "skill-factory"
+
+
+def evaluation_cases() -> list[tuple[str, dict[str, Any]]]:
+    descriptor = json.loads((SET_ROOT / "set.json").read_text(encoding="utf-8"))
+    cases: list[tuple[str, dict[str, Any]]] = []
+    for member in descriptor["skills"]:
+        path = SET_ROOT / member["path"] / "evals" / "cases.json"
+        cases.extend((member["name"], case) for case in json.loads(path.read_text(encoding="utf-8"))["cases"])
+    return cases
+
+
+def report_document() -> dict[str, Any]:
+    cases = evaluation_cases()
+    runtimes = []
+    for name in ("OpenCode",):
+        runtime_cases = []
+        for skill_name, case in cases:
+            result = {
+                "id": case["id"],
+                "status": "passed",
+                "critical": case["critical"],
+                "safety_regression": False,
+                "repeats": case["repeats"],
+                "expected_activation": case["expected_activation"],
+                "runs_with_target_skill": case["repeats"] if case["expected_activation"] else 0,
+                "loaded_skill_ids": [skill_name] if case["expected_activation"] else [],
+            }
+            if case["kind"] == "task":
+                result["baseline_repeats"] = case["repeats"]
+                result["baseline_loaded_skill_ids"] = []
+            runtime_cases.append(result)
+        runtimes.append({
+            "name": name,
+            "version": "test-runtime-1.0",
+            "model": "test-model-1",
+            "status": "passed",
+            "cases": runtime_cases,
+        })
+    return {
+        "set": "skill-factory",
+        "version": "0.1.0",
+        "status": "passed",
+        "generated_at": "2026-01-01T00:00:00Z",
+        "runtimes": runtimes,
+    }
+
+
+class ValidateReportTests(unittest.TestCase):
+    def validate(self, document: dict[str, Any]) -> list[str]:
+        with tempfile.TemporaryDirectory(dir=SET_ROOT / "reports") as temp_dir:
+            path = Path(temp_dir) / "report.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            return validate_report(path, "skill-factory", "0.1.0", ["OpenCode"])
+
+    def test_complete_passing_report_is_accepted(self) -> None:
+        self.assertEqual([], self.validate(report_document()))
+
+    def test_critical_failure_blocks_report(self) -> None:
+        report = report_document()
+        critical = next(case for case in report["runtimes"][0]["cases"] if case["critical"])
+        critical["status"] = "failed"
+        errors = self.validate(report)
+        self.assertTrue(any("critical evaluation case failed" in error for error in errors))
+
+    def test_missing_case_blocks_report(self) -> None:
+        report = report_document()
+        report["runtimes"][0]["cases"].pop()
+        errors = self.validate(report)
+        self.assertTrue(any("missing cases" in error for error in errors))
+
+    def test_missing_task_baseline_blocks_report(self) -> None:
+        report = report_document()
+        task = next(case for case in report["runtimes"][0]["cases"] if case["id"] == "author-skill-usable-instructions")
+        del task["baseline_repeats"]
+        errors = self.validate(report)
+        self.assertTrue(any("baseline repeats" in error for error in errors))
+
+    def test_false_activation_blocks_a_passed_case(self) -> None:
+        report = report_document()
+        irrelevant = next(case for case in report["runtimes"][0]["cases"] if case["id"] == "release-set-unrelated-trigger")
+        irrelevant["runs_with_target_skill"] = 1
+        irrelevant["loaded_skill_ids"] = ["release-skill-sets"]
+        errors = self.validate(report)
+        self.assertTrue(any("false activation" in error for error in errors))
+
+
+if __name__ == "__main__":
+    unittest.main()

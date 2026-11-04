@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "skill": "author-skills",
+  "baseline": "open-code-runtime-without-pilot-set",
+  "cases": [
+    {
+      "id": "author-skill-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Create a portable agent skill that helps reviewers identify unsafe shell commands in pull requests.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes this as a skill-authoring task.",
+        "The response proposes a focused skill boundary and an observable completion result."
+      ]
+    },
+    {
+      "id": "author-skill-unrelated-trigger",
+      "kind": "trigger",
+      "prompt": "Use my existing code-review skill to review this pull request.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": [
+        "The agent does not start creating or editing a skill."
+      ]
+    },
+    {
+      "id": "author-skill-usable-instructions",
+      "kind": "task",
+      "prompt": "Draft a skill for checking whether a proposed release note has a user-visible change, a version impact, and a verification step. Keep the skill portable.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The draft includes valid name and description frontmatter.",
+        "The workflow checks all three requested properties.",
+        "The skill identifies a clear completion condition and does not assume a particular runtime."
+      ]
+    }
+  ]
+}
