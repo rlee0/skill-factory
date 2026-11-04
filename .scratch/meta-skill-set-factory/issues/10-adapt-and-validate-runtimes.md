@@ -4,10 +4,14 @@
 
 **Blocked by:** 03: Design the set and guide the factory workflow; 08: Evaluate activation and task outcomes.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Keep portable Agent Skills behavior as the default and identify any runtime-specific instructions or requirements explicitly.
-- [ ] Select an intentional runtime matrix and define the evidence required for each claimed runtime.
-- [ ] Record exact runtime versions, model identifiers, and passing results before marking a runtime as tested.
-- [ ] Leave unsupported or unevaluated runtimes untested; never infer universal compatibility from one passing runtime.
-- [ ] Include evaluation cases for documenting runtime differences and refusing unsupported compatibility claims.
+- [x] Keep portable Agent Skills behavior as the default and identify any runtime-specific instructions or requirements explicitly.
+- [x] Select an intentional runtime matrix and define the evidence required for each claimed runtime.
+- [x] Record exact runtime versions, model identifiers, and passing results before marking a runtime as tested.
+- [x] Leave unsupported or unevaluated runtimes untested; never infer universal compatibility from one passing runtime.
+- [x] Include evaluation cases for documenting runtime differences and refusing unsupported compatibility claims.
+
+## Comments
+
+- Implemented in commit `f8d9863`; merged into the integration branch as `6922c1f`. Repository check, 21 unit tests, and `git diff --check` passed; `skills-ref` was unavailable, so only basic frontmatter validation ran. Behavioral evaluations were not run.
