@@ -2,12 +2,16 @@
   "schema_version": 1,
   "name": "skill-factory",
   "version": "0.1.0",
-  "description": "A focused collection for authoring, evaluating, and releasing portable agent skills and skill sets.",
+  "description": "A focused collection for discovering domains, authoring, evaluating, and releasing portable agent skills and skill sets.",
   "license": "Apache-2.0",
   "skills": [
     {
       "name": "author-skills",
       "path": "skills/author-skills"
+    },
+    {
+      "name": "discover-domain",
+      "path": "skills/discover-domain"
     },
     {
       "name": "evaluate-skills",
@@ -21,8 +25,6 @@
   "target_runtimes": [
     "OpenCode"
   ],
-  "tested_runtimes": [
-    "OpenCode"
-  ],
-  "evaluation_status": "passed"
+  "tested_runtimes": [],
+  "evaluation_status": "pending"
 }

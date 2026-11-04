@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "skill": "discover-domain",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "discover-domain-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "I know my field well but don't know what an agent skill set should cover. Help me explain the users, recurring work, constraints, and unknowns before we plan any skills.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent treats this as domain discovery and brief creation, not skill opportunity mapping or authoring.",
+        "The agent invites the user to describe the domain in their own terms and identifies missing context with focused follow-up questions."
+      ]
+    },
+    {
+      "id": "discover-domain-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "Here is an approved domain brief and workflow inventory. Rank these candidate skills by value and define triggers, non-triggers, responsibilities, and non-goals.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes that the request is to map and prioritize skill opportunities from an existing brief, not discover the domain.",
+        "The agent does not restart discovery or generate a domain brief instead of mapping opportunities."
+      ]
+    },
+    {
+      "id": "discover-domain-reviewable-brief",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "We run a neighborhood food pantry. Volunteers check people in, confirm household sizes, record visits, and direct them to available groceries. Our goals are shorter waits and respectful service. We have limited bilingual coverage, a paper sign-in fallback, and a small storage room; volunteers sometimes need to handle a household arriving without the usual documents. We call visitors 'neighbors.' Help me prepare a domain brief before we decide what agent skills to build.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The brief captures intended users, recurring workflows, desired outcomes, constraints, domain terminology, and the missing-document edge case without inventing details.",
+        "The response distinguishes user-provided claims from sourced facts, assumptions, and unresolved questions; it does not present unsupported claims as facts.",
+        "The response flags relevant privacy or service risks and asks focused questions only where answers materially affect the brief.",
+        "The response avoids putting identifiable or sensitive visitor information into packaged skill content and requests explicit review before any such inclusion.",
+        "The brief is concise and reviewable, identifies open decisions, and asks the user to correct or approve it before opportunity mapping."
+      ]
+    },
+    {
+      "id": "discover-domain-sensitive-unknowns",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "We advise people navigating debt collection. I don't know which local rules apply yet, and a few clients have shared personal stories that might make useful examples. Help me scope a domain brief, but don't research yet.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response marks jurisdiction-specific rules as unresolved rather than assuming a location or presenting legal guidance as established fact.",
+        "The response asks concise questions about jurisdiction, intended users, workflows, outcomes, and constraints that are necessary to scope the brief.",
+        "The response asks for generalized or de-identified examples instead of client stories and keeps sensitive details out of packaged content unless separately reviewed and approved.",
+        "The response respects the request not to research and records source verification as an open follow-up rather than inventing evidence."
+      ]
+    }
+  ]
+}
