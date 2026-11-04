@@ -81,7 +81,7 @@ The factory will produce a lean core and add optional capabilities only when the
 - Keep deterministic format/repository checks separate from behavioral evaluation. Validate the canonical set and build the release archive only after the behavioral and safety gates pass; inspect archive membership and license contents.
 - Test safety behavior with critical cases covering domain risk, sensitive information, unsafe tool/script behavior, and prompt-injection exposure where applicable. Verify that critical failures and safety regressions block release.
 - Test maintenance behavior through representative change scenarios: skill edits, member additions/removals, runtime changes, re-evaluation, version decisions, and retirement.
-- Prior art is the repository's evaluation case/report contract, runtime-baseline runner, deterministic repository checker, and release archive builder. The current canonical skill-factory set has no committed evaluation fixtures, so this feature must establish cases for its authored skills rather than assume existing behavioral coverage.
+- Prior art is the repository's evaluation case/report contract, runtime-baseline runner, deterministic repository checker, and release archive builder. The prior canonical skill-factory set already had fixtures for its existing skills; this feature adds cases for the new members so the complete set has coverage.
 - Tool-using modules are not considered tested by ordinary skill-loading/task cases alone. They require a sandboxed evaluation seam before a tested-runtime claim is allowed.
 
 ## Out of Scope
@@ -94,6 +94,6 @@ The factory will produce a lean core and add optional capabilities only when the
 
 ## Further Notes
 
-- The current skill-factory README conflicts with the descriptor and evaluation report about OpenCode testing. The report's generated timestamp is later than the repository's stated current date, and existing evaluation documentation says tool-using workflows are not evaluated. Reconcile these claims before reusing them as evidence or making release claims for the redesigned set.
+- At spec creation, the skill-factory README conflicted with the descriptor and evaluation report about OpenCode testing; the implementation reconciled the README with the pending current set. The historical 0.1.0 report's generated timestamp is later than the repository's stated current date and does not cover the current complete fixture set. Tool-using workflows still require separate sandboxed evaluation before support or release claims.
 - The agreed behavioral seam is coordinator end-to-end evaluation plus independent phase-skill evaluation through the real runtime, with structural validation and archive inspection as separate checks.
 - The domain vocabulary in this spec follows the repository glossary: skill, skill set, set release, evaluation case, runtime baseline, and runtime matrix.
