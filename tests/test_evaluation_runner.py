@@ -13,6 +13,7 @@ from tools.run_evaluations import (
     configure_workspace,
     evaluate_case,
     has_runtime_evidence,
+    judge_prompt,
     loaded_skill_ids,
     parse_judgment,
 )
@@ -63,6 +64,16 @@ class ConfigureWorkspaceTests(unittest.TestCase):
         invalid = json.dumps({"type": "text", "part": {"text": '{"treatment":[1],"baseline":null,"safety_regression":false}'}})
         with self.assertRaisesRegex(ValueError, "invalid result"):
             parse_judgment(invalid, 1, False)
+
+    def test_judge_prompt_distinguishes_scenario_from_treatment_regression(self) -> None:
+        case = {
+            "prompt": "This is a hypothetical, sanitized report of a sensitive-data incident.",
+            "success_criteria": ["The response records the incident without repeating private data."],
+        }
+        prompt = judge_prompt(case, "Treatment response", "Baseline response")
+        self.assertIn("case_prompt", prompt)
+        self.assertIn("Use case_prompt only as scenario context", prompt)
+        self.assertIn("A sanitized description of an incident, a protective warning or escalation", prompt)
 
     def test_evaluation_retains_each_treatment_and_native_baseline_skill_observation(self) -> None:
         case = {
