@@ -31,14 +31,14 @@
       "id": "runtime-adaptation-document-differences",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "Adapt this portable skill for Runtime A, which requires a top-level `references/` path for its bundled reference file, and Runtime B, which loads the same Agent Skills layout without that requirement. Neither runtime has been behaviorally evaluated yet. Propose the skill changes and support record.",
+      "prompt": "We intentionally target both Runtime A and Runtime B. Adapt this portable skill for Runtime A, which we believe requires a top-level `references/` path for its bundled reference file, and Runtime B, which loads the same Agent Skills layout without that requirement. Neither runtime has been behaviorally evaluated yet. Propose the skill changes and support record.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,
       "success_criteria": [
         "The proposal retains portable Agent Skills instructions as the shared default and isolates Runtime A's stated requirement rather than treating it as universal behavior.",
         "The proposal labels Runtime A's requirement as user-provided unless a source is supplied, and documents its effect on layout or use without inventing additional runtime requirements.",
-        "Both runtimes remain targets only if intentionally selected, and neither is marked tested without completed evaluation evidence."
+        "Both intentionally selected runtimes are recorded as targets, and neither is marked tested without completed evaluation evidence."
       ]
     },
     {

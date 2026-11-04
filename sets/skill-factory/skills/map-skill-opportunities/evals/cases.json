@@ -6,13 +6,13 @@
     {
       "id": "map-skill-opportunities-relevant-trigger",
       "kind": "trigger",
-      "prompt": "We have an approved domain brief describing our users, recurring workflows, and constraints. Turn it into a focused, prioritized set of agent-skill opportunities with clear boundaries.",
+      "prompt": "We have an approved domain brief, but its contents are not included in this conversation. I want a focused, prioritized map of bounded agent-skill opportunities. What do you need before mapping?",
       "expected_activation": true,
       "critical": true,
       "repeats": 3,
       "success_criteria": [
-        "The agent recognizes that the brief is ready for opportunity mapping rather than restarting domain discovery or authoring skills.",
-        "The agent produces actionable workflow-based candidates with responsibilities and activation boundaries, not a topic-only inventory."
+        "The agent recognizes this as opportunity mapping from an approved brief, rather than initial discovery, architecture, or authoring.",
+        "Because the brief contents are absent, the agent requests the reviewed brief instead of inventing candidate skills or priorities."
       ]
     },
     {
@@ -46,14 +46,14 @@
       "id": "map-skill-opportunities-resolve-overlap",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "Approved brief for a small volunteer-run tool library: members request equipment, staff check items in and out, inspect returns, and maintain a reservation calendar. One proposal is 'help with all tool-library work'; another is 'answer member questions'; a third is 'track overdue items.' We have one staff member on weekends, a shared spreadsheet, and no authority to charge fees or suspend memberships. Please assess these proposals and recommend a focused opportunity map.",
+      "prompt": "Approved brief for a small volunteer-run tool library: members request equipment, staff check items in and out, inspect returns, and maintain a reservation calendar. One proposal is 'help with all tool-library work'; another is 'answer member questions,' including questions about overdue items and reservations; a third is 'track overdue items.' We have one staff member on weekends, a shared spreadsheet, and no authority to charge fees or suspend memberships. Please assess these proposals and recommend a focused opportunity map.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,
       "success_criteria": [
         "The response identifies the overly broad proposal and narrows it into distinct, actionable workflow opportunities with clear ownership boundaries.",
-        "The response detects overlap between member-question handling and overdue-item work, then recommends a justified split, merge, or explicit handoff rather than duplicating responsibilities.",
-        "The response identifies low-value or infeasible candidates in light of staffing and spreadsheet constraints, and notes any material workflow gap not represented by the proposals.",
+        "The response detects that broad member-question handling overlaps overdue-item questions and proposes a focused boundary or handoff rather than duplicating the overdue workflow.",
+        "The response does not claim member questions can be answered reliably without approved policy sources, and identifies missing spreadsheet access or workflow rules as unresolved feasibility gaps.",
         "Candidate triggers, nearby non-triggers, responsibilities, non-goals, expected outcomes, and prioritization rationale are specific to this brief; the response does not assign fee or suspension decisions to a skill.",
         "The response leaves unsupported assumptions visible and asks the user to review the focused map before moving to architecture or authoring."
       ]

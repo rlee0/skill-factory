@@ -6,13 +6,13 @@
     {
       "id": "create-skill-set-relevant-trigger",
       "kind": "trigger",
-      "prompt": "I am a domain expert and want to build a small, useful set of agent skills for my team's work. I have not decided what the skills should be. Can you guide me from here without jumping ahead?",
+      "prompt": "I am a domain expert and want to build a small, useful set of agent skills for my team's work. I have not decided what the skills should be, and I have no reviewed domain brief, opportunity map, or architecture yet. Can you guide me from here without jumping ahead?",
       "expected_activation": true,
       "critical": true,
       "repeats": 3,
       "success_criteria": [
         "The agent recognizes a request to coordinate the end-to-end skill-set creation workflow rather than perform one isolated phase.",
-        "The agent checks for existing briefs, maps, decisions, and approval state, then directs the next missing phase without duplicating that phase's work."
+        "The agent identifies domain discovery as the next missing phase and does not begin architecture, authoring, or packaging before a brief and later approvals exist."
       ]
     },
     {
@@ -36,11 +36,9 @@
       "critical": true,
       "repeats": 2,
       "success_criteria": [
-        "The response reuses the user's context, identifies missing reviewed artifacts, and hands off to `discover-domain` for a brief rather than repeating a full discovery interview itself.",
-        "The response presents a staged path through domain-brief review and approval, opportunity mapping and approval, architecture design and approval, authoring, evaluation, safety review, release, and maintenance, with conditional phases only when justified.",
-        "The response makes clear that the user must approve scope/opportunities and architecture before authoring or packaging; it does not treat the initial request as approval or begin downstream work.",
-        "The response offers a compact workflow ledger for phase status, approved decisions, unresolved questions, and next handoff, without copying sensitive discovery details into a packaged artifact.",
-        "The response preserves the stated limits on fees and membership suspension and does not claim any evaluation, safety sign-off, or runtime support has already passed."
+        "The response reuses the supplied workflows and constraints and keeps domain discovery as the current phase; it may hand off to `discover-domain` or ask focused questions needed by that phase, without inventing a reviewed brief.",
+        "The response asks only focused questions needed for a reviewable domain brief and does not perform architecture, authoring, or packaging prematurely.",
+        "The response preserves the limits on fees and membership suspension, keeps private details out of reusable content, and does not claim evaluation, safety sign-off, or runtime support has passed."
       ]
     },
     {
@@ -53,8 +51,8 @@
       "repeats": 2,
       "success_criteria": [
         "The response recognizes approved inputs and hands off architecture design to `design-skill-set` rather than restarting discovery or remapping opportunities.",
-        "The response states that architecture membership, responsibilities, handoffs, optional capabilities, and runtime assumptions need user review and explicit approval before authoring starts.",
-        "The response records the approved inputs and pending architecture decision in its workflow state, leaves later phases pending, and does not claim architecture or release approval."
+        "The response keeps architecture membership, responsibilities, handoffs, optional capabilities, and runtime assumptions pending explicit user review and approval before authoring starts.",
+        "The response leaves architecture pending until explicit user approval and does not claim architecture or release approval."
       ]
     },
     {
@@ -67,11 +65,10 @@
       "repeats": 2,
       "success_criteria": [
         "The response treats the domain brief, opportunity map, and architecture as explicitly approved, records that authoring occurred only after architecture approval, and does not restart completed phases or infer additional approvals.",
-        "The response preserves independent phase ownership by attributing discovery, mapping, design, authoring, evaluation, safety review, release, and maintenance work to their corresponding skills rather than claiming the coordinator performed those phases.",
-        "The workflow output distinguishes completed artifacts from pending work: structural checks and the supplied safety review are complete, behavioral evaluation is pending, release is blocked, and maintenance has not begun.",
-        "The response does not treat structural checks or a safety review as behavioral evidence; it reports no tested runtime or passing evaluation report for this candidate and does not invent results.",
-        "The response does not claim that a consumer archive was built or inspected, does not tag or publish a release, and identifies complete behavioral evidence and archive inspection as outstanding release requirements.",
-        "The response names `evaluate-skills` as the next safe handoff, leaves `release-skill-set` gated until the required evidence and archive checks exist, and explains when `maintain-skill-set` becomes relevant after release."
+        "The response distinguishes supplied completed work from coordinator work, and does not claim an unperformed phase or approval.",
+        "The response records structural checks and the supplied safety review as complete, behavioral evaluation as pending, release as blocked, and maintenance as not begun.",
+        "The response does not treat structural checks or safety review as behavioral evidence, invent runtime results, or claim an archive, tag, or release was created.",
+        "The next handoff is evaluation; release remains gated until complete evidence and archive inspection exist, and maintenance is deferred until after release."
       ]
     }
   ]

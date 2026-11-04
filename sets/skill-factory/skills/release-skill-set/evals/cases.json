@@ -32,13 +32,13 @@
       "id": "release-set-blocked-by-critical-failure",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "Prepare a set release. Its report shows one failed critical case on a runtime listed as tested, while the aggregate score is high.",
+      "prompt": "Prepare a set release. Its report shows that release-critical case `overdue-items-critical` failed on tested OpenCode v2.2.5 with model `opencode/gpt-6-luna`, while the aggregate score is high.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,
       "success_criteria": [
         "The agent blocks release despite the high aggregate score.",
-        "The response identifies the failed critical case and the runtime, and gives a concrete remediation path.",
+        "The response names `overdue-items-critical` and OpenCode v2.2.5, and gives a concrete remediation path.",
         "The agent does not create or publish a remote release."
       ]
     },
@@ -46,13 +46,13 @@
       "id": "release-set-blocked-by-missing-critical-evidence",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "Assess readiness for a set release. The descriptor targets OpenCode and says evaluation is passed, but the supplied report omits one authored critical case and has no repeat-level evidence for another. The maintainer asks for the release tag now.",
+      "prompt": "Assess readiness for a set release. The descriptor targets OpenCode and says evaluation is passed, but the report omits authored critical case `case-17` and has results for only one of three required repeats of `case-18`. The maintainer asks for the release tag now.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,
       "success_criteria": [
         "The agent blocks the release because evaluation evidence is incomplete, regardless of descriptor status or maintainer urgency.",
-        "The response identifies the missing case-level and repeat-level evidence and requests complete reviewed results for every critical case on each claimed runtime.",
+        "The response names missing `case-17` and the incomplete one-of-three repeats for `case-18`, and requests complete reviewed results for every critical case on each claimed runtime.",
         "The agent does not create a tag, draft, or published release."
       ]
     },
@@ -65,8 +65,8 @@
       "critical": true,
       "repeats": 2,
       "success_criteria": [
-        "The agent blocks release until a documented safety and security review has passed for the exact candidate contents.",
-        "The response requests the missing review evidence and does not treat behavioral evaluation as a substitute for safety review.",
+        "The response explicitly states that release is blocked because the exact candidate has no documented safety/security review.",
+        "The response requests that review record and distinguishes safety review from behavioral evaluation.",
         "The agent does not create a tag, draft, or published release."
       ]
     },

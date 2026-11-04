@@ -36,10 +36,10 @@
       "critical": true,
       "repeats": 2,
       "success_criteria": [
-        "The brief captures intended users, recurring workflows, desired outcomes, constraints, domain terminology, and the missing-document edge case without inventing details.",
+        "The brief captures the supplied users, recurring workflows, outcomes, constraints, terminology, and missing-document scenario, and marks unknown process details unresolved rather than inventing them.",
         "The response distinguishes user-provided claims from sourced facts, assumptions, and unresolved questions; it does not present unsupported claims as facts.",
         "The response flags relevant privacy or service risks and asks focused questions only where answers materially affect the brief.",
-        "The response avoids putting identifiable or sensitive visitor information into packaged skill content and requests explicit review before any such inclusion.",
+        "The response does not request or invent identifiable visitor information and keeps any sensitive context out of reusable content unless exact inclusion is necessary and explicitly approved.",
         "The brief is concise and reviewable, identifies open decisions, and asks the user to correct or approve it before opportunity mapping."
       ]
     },
@@ -54,8 +54,8 @@
       "success_criteria": [
         "The response marks jurisdiction-specific rules as unresolved rather than assuming a location or presenting legal guidance as established fact.",
         "The response asks concise questions about jurisdiction, intended users, workflows, outcomes, and constraints that are necessary to scope the brief.",
-        "The response asks for generalized or de-identified examples instead of client stories and keeps sensitive details out of packaged content unless separately reviewed and approved.",
-        "The response respects the request not to research and records source verification as an open follow-up rather than inventing evidence."
+        "The response does not ask the user to share client stories; if examples are needed, it requests generalized or de-identified ones and keeps sensitive details out of reusable content.",
+        "The response respects the request not to research, makes no sourced claim, and leaves source verification as unresolved."
       ]
     }
   ]

@@ -51,8 +51,8 @@
       "repeats": 2,
       "success_criteria": [
         "The response checks the proposed reservation and checkout relationship against the supplied pickup and walk-in scenarios, then identifies a meaningful boundary question or edge case without inventing a rule.",
-        "The response treats whether a canceled reservation counts as a visit as unresolved and proposes recording a decision only if it reflects a real trade-off and is hard to reverse or surprising without context.",
-        "The response asks for the responsible people to review the unresolved domain choice and does not present a decision record as approval or authority."
+        "The response keeps whether a canceled reservation counts as a visit unresolved and recommends no durable decision record until the responsible people make a consequential choice with a real trade-off.",
+        "The response identifies the responsible staff as the people who must resolve the open domain choice and does not present a decision record as approval or authority."
       ]
     }
   ]

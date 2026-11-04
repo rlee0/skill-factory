@@ -1,6 +1,6 @@
 ---
 name: review-safety
-description: Review proposed or changed agent skills and skill sets for domain safety, security, privacy, and release risks. Use before distribution or when reviewing a safety-relevant change, especially for consequential use, sensitive information, scripts, tools, or prompt-injection exposure; not for domain discovery, skill authoring, or general code review.
+description: Directly assess domain-safety, security, privacy, and safeguard risks in a proposed or changed agent skill or set. Use before distribution or when reviewing consequential use, sensitive information, scripts, tools, or prompt-injection exposure; not for release-readiness checks, domain discovery, skill authoring, or general code review.
 license: Apache-2.0
 ---
 

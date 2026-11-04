@@ -1,6 +1,6 @@
 ---
 name: release-skill-set
-description: Prepare or assess an evidence-backed, versioned release of a curated Agent Skills set. Use when a specific candidate is ready for release validation, evidence, safety, licensing, archive checks, or release-readiness review. Not for early post-release change-impact or SemVer planning before a candidate is ready (use maintain-skill-set), general SemVer questions, release-note reviews, or unrelated software releases.
+description: Prepare or assess an evidence-backed, versioned release of a curated Agent Skills set. Use when a specific candidate needs release-readiness validation, including checks for existing safety evidence, licensing, evaluation, and archive contents. Hand direct safety/security analysis to review-safety; not for maintenance planning before a candidate is ready, general SemVer, release-note reviews, or unrelated software releases.
 license: Apache-2.0
 ---
 
