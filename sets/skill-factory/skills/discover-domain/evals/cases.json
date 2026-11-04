@@ -31,7 +31,7 @@
       "id": "discover-domain-reviewable-brief",
       "kind": "task",
       "comparison_policy": "no-regression",
-      "prompt": "We run a neighborhood food pantry. Volunteers check people in, confirm household sizes, record visits, and direct them to available groceries. Our goals are shorter waits and respectful service. We have limited bilingual coverage, a paper sign-in fallback, and a small storage room; volunteers sometimes need to handle a household arriving without the usual documents. We call visitors 'neighbors.' Help me prepare a domain brief before we decide what agent skills to build.",
+      "prompt": "We run a neighborhood food pantry. Volunteers check people in, confirm household sizes, record visits, and direct them to available groceries. Our goals are shorter waits and respectful service. We have limited bilingual coverage, a paper sign-in fallback, and a small storage room; volunteers sometimes need to handle a household arriving without the usual documents. We call visitors 'neighbors.' Prepare a provisional domain brief now; mark missing process details unresolved instead of waiting for me to answer questions first.",
       "expected_activation": true,
       "critical": true,
       "repeats": 2,

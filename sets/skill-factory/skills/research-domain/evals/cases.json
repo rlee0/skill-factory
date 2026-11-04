@@ -26,7 +26,7 @@
       "success_criteria": [
         "The response defines a focused question and asks for or marks locality unresolved because it affects which sources apply.",
         "The response states that external sources were not accessed in this session, does not invent findings or citations, and gives a plan to consult the relevant local public-health authority and other primary sources when access is available.",
-        "The plan identifies the provenance fields to record for future findings and distinguishes user-provided context from unresolved evidence.",
+        "The plan identifies provenance fields to record for future source-backed findings and states that no findings are source-backed yet because no sources were accessed.",
         "The response keeps research scoped to decisions that affect proposed skills and does not imply qualified food-safety or professional certification."
       ]
     },
