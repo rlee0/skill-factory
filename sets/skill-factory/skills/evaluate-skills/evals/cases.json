@@ -29,6 +29,7 @@
     {
       "id": "evaluate-skill-comparable-baseline",
       "kind": "task",
+      "comparison_policy": "uplift",
       "prompt": "Create an evaluation plan for a skill that generates migration checklists. Compare it with and without the skill and make critical failures visible.",
       "expected_activation": true,
       "critical": true,

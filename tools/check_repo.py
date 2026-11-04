@@ -17,41 +17,41 @@ SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]
 SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
-def read_json(path: Path, errors: list[str]) -> dict[str, Any] | None:
+def read_json(path: Path, errors: list[str], root: Path = ROOT) -> dict[str, Any] | None:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        errors.append(f"{path.relative_to(ROOT)}: cannot read JSON: {error}")
+        errors.append(f"{path.relative_to(root)}: cannot read JSON: {error}")
         return None
     if not isinstance(value, dict):
-        errors.append(f"{path.relative_to(ROOT)}: expected a JSON object")
+        errors.append(f"{path.relative_to(root)}: expected a JSON object")
         return None
     return value
 
 
-def read_skill_name(skill_file: Path, errors: list[str]) -> str | None:
+def read_skill_name(skill_file: Path, errors: list[str], root: Path = ROOT) -> str | None:
     try:
         text = skill_file.read_text(encoding="utf-8")
     except OSError as error:
-        errors.append(f"{skill_file.relative_to(ROOT)}: cannot read: {error}")
+        errors.append(f"{skill_file.relative_to(root)}: cannot read: {error}")
         return None
 
     if not text.startswith("---\n"):
-        errors.append(f"{skill_file.relative_to(ROOT)}: YAML frontmatter must start on line 1")
+        errors.append(f"{skill_file.relative_to(root)}: YAML frontmatter must start on line 1")
         return None
     _, separator, _ = text[4:].partition("\n---\n")
     if not separator:
-        errors.append(f"{skill_file.relative_to(ROOT)}: missing closing frontmatter delimiter")
+        errors.append(f"{skill_file.relative_to(root)}: missing closing frontmatter delimiter")
         return None
 
     header = text[4:].split("\n---\n", 1)[0]
     name_match = re.search(r"(?m)^name:\s*([^\s#]+)\s*$", header)
     description_match = re.search(r"(?m)^description:\s*(.+?)\s*$", header)
     if not name_match:
-        errors.append(f"{skill_file.relative_to(ROOT)}: missing scalar 'name' field")
+        errors.append(f"{skill_file.relative_to(root)}: missing scalar 'name' field")
         return None
     if not description_match:
-        errors.append(f"{skill_file.relative_to(ROOT)}: missing non-empty 'description' field")
+        errors.append(f"{skill_file.relative_to(root)}: missing non-empty 'description' field")
     return name_match.group(1).strip("\"'")
 
 
@@ -64,12 +64,14 @@ def read_skill_license(skill_file: Path) -> str | None:
     return match.group(1).strip("\"'") if match else None
 
 
-def validate_cases(skill_dir: Path, skill_name: str, errors: list[str], set_case_ids: set[str]) -> None:
+def validate_cases(
+    skill_dir: Path, skill_name: str, errors: list[str], set_case_ids: set[str], root: Path = ROOT
+) -> None:
     cases_path = skill_dir / "evals" / "cases.json"
-    cases_file = read_json(cases_path, errors)
+    cases_file = read_json(cases_path, errors, root)
     if cases_file is None:
         return
-    label = cases_path.relative_to(ROOT)
+    label = cases_path.relative_to(root)
     if cases_file.get("schema_version") != 1:
         errors.append(f"{label}: schema_version must be 1")
     if cases_file.get("skill") != skill_name:
@@ -120,6 +122,10 @@ def validate_cases(skill_dir: Path, skill_name: str, errors: list[str], set_case
             errors.append(f"{prefix}.success_criteria must be a non-empty array of strings")
         if kind == "task" and case.get("expected_activation") is not True:
             errors.append(f"{prefix}: task cases must expect activation")
+        if kind == "task" and case.get("comparison_policy") not in {"uplift", "no-regression"}:
+            errors.append(f"{prefix}.comparison_policy must be 'uplift' or 'no-regression'")
+        if kind == "trigger" and "comparison_policy" in case:
+            errors.append(f"{prefix}: comparison_policy is only valid for task cases")
 
     for required_kind in ("trigger", "task"):
         if required_kind not in kinds:
@@ -135,26 +141,27 @@ def validate_skill(
     require_validator: bool,
     errors: list[str],
     warnings: list[str],
+    root: Path = ROOT,
 ) -> None:
     skill_file = skill_dir / "SKILL.md"
     if not skill_file.is_file():
-        errors.append(f"{skill_dir.relative_to(ROOT)}: missing SKILL.md")
+        errors.append(f"{skill_dir.relative_to(root)}: missing SKILL.md")
         return
 
-    actual_name = read_skill_name(skill_file, errors)
+    actual_name = read_skill_name(skill_file, errors, root)
     if actual_name and actual_name != expected_name:
         errors.append(
-            f"{skill_file.relative_to(ROOT)}: frontmatter name {actual_name!r} does not match {expected_name!r}"
+            f"{skill_file.relative_to(root)}: frontmatter name {actual_name!r} does not match {expected_name!r}"
         )
     skill_license = read_skill_license(skill_file)
     if skill_license and skill_license != set_license:
         license_path = Path(skill_license)
         if license_path.is_absolute() or ".." in license_path.parts or not (skill_dir / license_path).is_file():
             errors.append(
-                f"{skill_file.relative_to(ROOT)}: a skill license override must reference a bundled file inside the skill directory"
+                f"{skill_file.relative_to(root)}: a skill license override must reference a bundled file inside the skill directory"
             )
     if not SKILL_NAME.fullmatch(expected_name):
-        errors.append(f"{skill_dir.relative_to(ROOT)}: skill directory name is not lowercase kebab-case")
+        errors.append(f"{skill_dir.relative_to(root)}: skill directory name is not lowercase kebab-case")
 
     if validator:
         result = subprocess.run(
@@ -165,16 +172,17 @@ def validate_skill(
         )
         if result.returncode:
             details = result.stderr.strip() or result.stdout.strip() or "validator returned a failure"
-            errors.append(f"{skill_dir.relative_to(ROOT)}: skills-ref failed: {details}")
+            errors.append(f"{skill_dir.relative_to(root)}: skills-ref failed: {details}")
     elif require_validator:
         errors.append("skills-ref is required; install requirements-dev.txt")
     else:
-        warnings.append(f"{skill_dir.relative_to(ROOT)}: skills-ref unavailable; only basic frontmatter checks ran")
+        warnings.append(f"{skill_dir.relative_to(root)}: skills-ref unavailable; only basic frontmatter checks ran")
 
-    validate_cases(skill_dir, expected_name, errors, set_case_ids)
+    validate_cases(skill_dir, expected_name, errors, set_case_ids, root)
 
 
-def validate_repo(require_validator: bool = False) -> tuple[list[str], list[str]]:
+def validate_repo(require_validator: bool = False, root: Path = ROOT) -> tuple[list[str], list[str]]:
+    root = root.resolve()
     errors: list[str] = []
     warnings: list[str] = []
     validator = shutil.which("skills-ref")
@@ -185,17 +193,17 @@ def validate_repo(require_validator: bool = False) -> tuple[list[str], list[str]
     if require_validator and not validator:
         errors.append("skills-ref is required; install requirements-dev.txt")
 
-    set_files = sorted((ROOT / "sets").glob("*/set.json"))
+    set_files = sorted((root / "sets").glob("*/set.json"))
     if not set_files:
         errors.append("sets/: no set.json files found")
         return errors, warnings
 
     for descriptor_path in set_files:
         set_root = descriptor_path.parent
-        descriptor = read_json(descriptor_path, errors)
+        descriptor = read_json(descriptor_path, errors, root)
         if descriptor is None:
             continue
-        label = descriptor_path.relative_to(ROOT)
+        label = descriptor_path.relative_to(root)
         set_name = descriptor.get("name")
         if set_name != set_root.name:
             errors.append(f"{label}: name must match directory {set_root.name!r}")
@@ -268,12 +276,13 @@ def validate_repo(require_validator: bool = False) -> tuple[list[str], list[str]
                 require_validator,
                 errors,
                 warnings,
+                root,
             )
 
         skills_root = set_root / "skills"
         actual_dirs = {path.resolve() for path in skills_root.iterdir() if path.is_dir()} if skills_root.is_dir() else set()
         for unlisted in sorted(actual_dirs - listed_dirs):
-            errors.append(f"{unlisted.relative_to(ROOT)}: skill directory is not listed in set.json")
+            errors.append(f"{unlisted.relative_to(root)}: skill directory is not listed in set.json")
 
     return errors, warnings
 

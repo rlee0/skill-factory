@@ -10,6 +10,7 @@ Each skill owns `evals/<skill-name>/cases.json`. Include:
 - **Task cases**: representative tasks with observable success criteria.
 - **Baseline**: compare the task with the skill available against the same task without it where practical.
 - **Criticality and repeats**: mark release-critical cases and set repeat counts per case. Any critical failure or serious safety regression blocks release.
+- **Task comparison**: task cases set `comparison_policy` to `uplift` or `no-regression`; CI compares criterion scores against the runtime baseline.
 
 Use realistic, safe prompts. Keep the task and rubric in the case file; do not encode a desired answer in a prompt in a way that gives the skill the answer.
 
@@ -17,7 +18,7 @@ Use realistic, safe prompts. Keep the task and rubric in the case file; do not e
 
 Evaluate each runtime a set claims as tested. Record the runtime version, model identifier, case results, repeats, and overall status in `reports/<version>.json`. Model choices may vary, but every result must identify the exact model used. Never infer compatibility for an untested runtime.
 
-The pilot supports OpenCode only. Its cases and local runner are present, but credentials are not configured and live CI integration is not enabled; its `tested_runtimes` list therefore remains empty. The current GitHub check validates case structure, not behavioral effectiveness.
+The pilot supports OpenCode only. The published v0.1.0 report records a manually reviewed passing evaluation for OpenCode. The local runner retains traces for manual review; CI emits only sanitized case scores and keeps raw traces in temporary workspaces. Behavioral CI runs affected skills with `opencode/gpt-6-luna`; update runtime claims and release reports only after reviewing complete evidence.
 
 Set `OPENCODE_API_KEY` in the local environment or in the ignored repository-root `.env` file, then run the six critical cases once each. A shell variable takes precedence over `.env`:
 
@@ -25,13 +26,13 @@ Set `OPENCODE_API_KEY` in the local environment or in the ignored repository-roo
 .venv/bin/python tools/run_evaluations.py skill-factory --model opencode/gpt-6-luna --smoke
 ```
 
-The harness launches each run in a fresh temporary workspace and passes only `OPENCODE_API_KEY` to the CLI. All actions except skill loading are denied. The treatment installs the pilot set; the runtime baseline omits it while retaining OpenCode-provided skills. Manifests record both set skills installed and skill IDs actually loaded, so native skills remain visible in the comparison. This measures the set's added value over the runtime users have. A relevant trigger passes only when its expected skill loads; an irrelevant trigger passes only when that target skill does not load. Raw output and manifests are written under ignored `evaluation-runs/`; review them locally and do not commit them.
+The harness launches each run in a fresh temporary workspace and passes only `OPENCODE_API_KEY` to the CLI. All actions except skill loading are denied for task runs; the separate rubric judge has all tools denied. The treatment installs the pilot set; the runtime baseline omits it while retaining OpenCode-provided skills. Manifests record both set skills installed and skill IDs actually loaded, so native skills remain visible in the comparison. This measures the set's added value over the runtime users have. A relevant trigger passes only when its expected skill loads; an irrelevant trigger passes only when that target skill does not load. In CI, the judge returns one boolean per criterion. The treatment must satisfy every criterion; `uplift` additionally requires a higher criterion count than baseline, while `no-regression` allows an equal count. Raw local output and manifests are written under ignored `evaluation-runs/`; review them locally and do not commit them.
 
-The smoke is **9 CLI runs**: three trigger runs and three task cases, each paired with the runtime baseline. If a run errors or any critical case fails, review the runner or skill and repeat the smoke before running the full suite. Manually score against each case's criteria. Require uplift for `evaluate-skill-comparable-baseline`; the authoring and release cases must meet their rubrics and be no worse than baseline. The harness leaves results at `pending-human-review`; a maintainer records the passing release report. Tool-using skill evaluations need a separate sandboxed runner.
+The smoke is **9 CLI runs**: three trigger runs and three task cases, each paired with the runtime baseline. If a run errors or any critical case fails, review the runner or skill and repeat the smoke before running the full suite. Manually score against each case's criteria. Require uplift for `evaluate-skill-comparable-baseline`; the authoring and release cases must meet their rubrics and be no worse than baseline. The local harness leaves results at `pending-human-review`; a maintainer records the passing release report. Tool-using skill evaluations need a separate sandboxed runner.
 
 ## Pull requests and releases
 
-Run deterministic checks on every pull request. After local calibration, behavioral results for affected skills are required before merge when credentials and an approved runtime environment are available. Fork contributions must use a maintainer-triggered run; never expose evaluation credentials to untrusted code.
+Run deterministic checks on every pull request. After `Checks` succeeds, `Behavioral Evaluations` evaluates only changed skills from trusted default-branch runner code; candidate files are checked out separately and treated as data. The `skill-evaluations` GitHub Environment gates the API key behind required reviewer approval. Fork pull requests do not run automatically; a maintainer can dispatch the workflow with an open PR number. Raw traces are never uploaded or written to job logs; only sanitized case statuses and counts appear in the job summary. Critical rubric failures, runtime errors, or activation errors fail the check; non-critical rubric failures are reported but do not block it.
 
 Before release, every critical case must pass for every claimed runtime. A good aggregate score cannot cancel a critical failure. Attach the passing report to the draft release and keep case fixtures in tagged source, not in the consumer archive.
 

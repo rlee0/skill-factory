@@ -29,6 +29,7 @@
     {
       "id": "author-skill-usable-instructions",
       "kind": "task",
+      "comparison_policy": "no-regression",
       "prompt": "Draft a skill for checking whether a proposed release note has a user-visible change, a version impact, and a verification step. Keep the skill portable.",
       "expected_activation": true,
       "critical": true,

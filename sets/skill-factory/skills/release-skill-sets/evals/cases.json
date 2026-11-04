@@ -31,6 +31,7 @@
     {
       "id": "release-set-blocked-by-critical-failure",
       "kind": "task",
+      "comparison_policy": "no-regression",
       "prompt": "Prepare a set release. Its report shows one failed critical case on a runtime listed as tested, while the aggregate score is high.",
       "expected_activation": true,
       "critical": true,

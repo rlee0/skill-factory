@@ -19,7 +19,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 - `evaluate-skills` — define and assess activation and task outcomes.
 - `release-skill-sets` — prepare a versioned set release.
 
-The pilot supports OpenCode only. Its evaluation scenarios and restricted local runner are present, but no live OpenCode results exist yet. Live evaluation is not wired into pull-request CI until local calibration and protected credentials are in place.
+The pilot supports OpenCode only. Its restricted local runner supports manual review; protected pull-request CI evaluates changed skills with OpenCode and a tool-disabled rubric judge. Raw CI traces are ephemeral, and only sanitized results are retained. See the [evaluation protocol](docs/evaluation.md) and run `bash scripts/setup-skill-evaluations.sh` to configure the protected API-key secret.
 
 The pilot skills are linked into `.agents/skills/` for local OpenCode discovery. Set sources remain canonical under `sets/skill-factory/`.
 
@@ -40,7 +40,7 @@ For local OpenCode evaluations, copy `.env.example` to `.env` and set `OPENCODE_
 
 ## Contribute
 
-Open a pull request for changes. Static checks validate set descriptors, evaluation-case structure, and every skill. Behavioral evaluation evidence is required before release; see [the evaluation protocol](docs/evaluation.md). The release workflow is prepared, but publication still requires passing runtime evidence and protected release-tag configuration.
+Open a pull request for changes. Static checks validate set descriptors, evaluation-case structure, and every skill. Behavioral evaluation runs after static checks for affected skills; fork PRs require a maintainer-triggered run. Behavioral release evidence is still required before release; see [the evaluation protocol](docs/evaluation.md).
 
 ## License
 
