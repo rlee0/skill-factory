@@ -13,7 +13,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 
 ## First-party pilot
 
-[`sets/skill-factory/`](sets/skill-factory/) contains ten focused skills:
+[`sets/skill-factory/`](sets/skill-factory/) contains eleven focused skills:
 
 - `author-skills` — author or revise a portable skill from an approved design, independently of the coordinator.
 - `create-skill-set` — coordinate the factory workflow, approval gates, and phase handoffs.
@@ -21,6 +21,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 - `discover-domain` — elicit and review domain context.
 - `domain-modeling` — clarify shared domain language and record consequential decisions.
 - `evaluate-skills` — define and assess activation and task outcomes.
+- `integrate-tools-safely` — design authorized tool/script integrations with least privilege and sandboxed evaluation gates.
 - `map-skill-opportunities` — derive and prioritize bounded skill candidates.
 - `research-domain` — deepen a domain brief with focused, trustworthy sources.
 - `release-skill-sets` — prepare a versioned set release.
