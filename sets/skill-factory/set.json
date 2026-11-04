@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "skill-factory",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A guided collection for discovering and modeling domain work, designing and coordinating tailored skill sets, deepening knowledge with evidence when needed, authoring portable skills, conditionally adapting runtime-specific behavior, evaluating outcomes, reviewing safety risks, and preparing reviewed releases.",
   "license": "Apache-2.0",
   "skills": [
