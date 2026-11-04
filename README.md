@@ -1,6 +1,6 @@
 # Skill Factory
 
-A public, reusable workshop for developing, evaluating, and shipping curated sets of portable agent skills. The repository also maintains the `skill-factory` set as its first-party pilot.
+A public, reusable workshop for developing, evaluating, safety-reviewing, and shipping curated sets of portable agent skills. The repository also maintains the `skill-factory` set as its first-party pilot.
 
 ## Repository model
 
@@ -13,15 +13,18 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 
 ## First-party pilot
 
-[`sets/skill-factory/`](sets/skill-factory/) contains seven focused skills:
+[`sets/skill-factory/`](sets/skill-factory/) contains ten focused skills:
 
 - `author-skills` — author or revise a portable skill from an approved design, independently of the coordinator.
 - `create-skill-set` — coordinate the factory workflow, approval gates, and phase handoffs.
 - `design-skill-set` — define tailored set membership, responsibilities, handoffs, and runtime assumptions.
 - `discover-domain` — elicit and review domain context.
+- `domain-modeling` — clarify shared domain language and record consequential decisions.
 - `evaluate-skills` — define and assess activation and task outcomes.
 - `map-skill-opportunities` — derive and prioritize bounded skill candidates.
+- `research-domain` — deepen a domain brief with focused, trustworthy sources.
 - `release-skill-sets` — prepare a versioned set release.
+- `review-safety` — review safety and security risks, require expert sign-off for consequential use, and enforce release gates.
 
 The pilot supports OpenCode only. Its restricted local runner supports manual review; protected pull-request CI evaluates changed skills with OpenCode and a tool-disabled rubric judge. Raw CI traces are ephemeral, and only sanitized results are retained. See the [evaluation protocol](docs/evaluation.md) and run `bash scripts/setup-skill-evaluations.sh` to configure the protected API-key secret.
 
