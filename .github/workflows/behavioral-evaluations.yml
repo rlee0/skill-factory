@@ -149,10 +149,10 @@ jobs:
               summary.write(f"**Status:** {result['status']}\n\n")
               if result.get("runtime"):
                   summary.write(f"Runtime: {result['runtime']} {result['runtime_version']} · Model: `{result['model']}`\n\n")
-                  summary.write("| Set | Skill | Case | Critical | Result | Activation errors | Runtime errors | Rubric failures |\n")
-                  summary.write("|---|---|---|---:|---|---:|---:|---:|\n")
+                  summary.write("| Set | Skill | Case | Critical | Result | Activation errors | Runtime errors | Rubric failures | Safety regression |\n")
+                  summary.write("|---|---|---|---:|---|---:|---:|---:|---|\n")
                   for item in result["evaluations"]:
-                      summary.write(f"| {item['set']} | {item['skill']} | {item['case']} | {item['critical']} | {item['status']} | {item['activation_errors']} | {item['runtime_errors']} | {item['rubric_failures']} |\n")
+                      summary.write(f"| {item['set']} | {item['skill']} | {item['case']} | {item['critical']} | {item['status']} | {item['activation_errors']} | {item['runtime_errors']} | {item['rubric_failures']} | {item['safety_regression']} |\n")
               else:
                   summary.write("No affected skills required behavioral evaluation.\n")
           PY

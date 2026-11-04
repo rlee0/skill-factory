@@ -32,6 +32,15 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
         errors.append("evaluation report status must be 'passed'")
     if not isinstance(report.get("generated_at"), str) or not report["generated_at"].strip():
         errors.append("evaluation report must record generated_at")
+    baseline_definition = report.get("baseline_definition")
+    if not isinstance(baseline_definition, str) or not baseline_definition.strip():
+        errors.append("evaluation report must define its runtime baseline")
+    else:
+        definition = baseline_definition.casefold()
+        if "without" not in definition or "remain" not in definition or not any(
+            marker in definition for marker in ("native", "runtime-provided", "opencode-provided")
+        ):
+            errors.append("evaluation report baseline must omit the candidate set and retain native runtime capabilities")
 
     runtimes = report.get("runtimes")
     if not isinstance(runtimes, list):
@@ -101,18 +110,88 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
             runs_with_target = case.get("runs_with_target_skill")
             if not isinstance(runs_with_target, int) or isinstance(runs_with_target, bool) or not 0 <= runs_with_target <= repeats:
                 errors.append(f"evaluation case {case_id!r} must record valid target-skill activation counts for {target!r}")
-            elif case.get("status") == "passed":
-                expected_runs_with_target = repeats if definition["expected_activation"] else 0
-                if runs_with_target != expected_runs_with_target:
-                    errors.append(f"evaluation case {case_id!r} has the wrong target-skill activation count for {target!r}")
-                if definition["expected_activation"] and target_skill not in loaded_skills:
-                    errors.append(f"evaluation case {case_id!r} did not record its target skill as loaded for {target!r}")
-                if not definition["expected_activation"] and target_skill in loaded_skills:
+            run_evidence = case.get("run_evidence")
+            if not isinstance(run_evidence, list) or len(run_evidence) != repeats:
+                errors.append(f"evaluation case {case_id!r} needs complete repeat-level evidence for {target!r}")
+                run_evidence = []
+            observed_loaded: set[str] = set()
+            observed_baseline: set[str] = set()
+            target_runs = 0
+            safety_observed = False
+            seen_repeats: set[int] = set()
+            for run in run_evidence:
+                if not isinstance(run, dict):
+                    errors.append(f"evaluation case {case_id!r} has malformed repeat-level evidence for {target!r}")
+                    continue
+                repeat_number = run.get("repeat")
+                if not isinstance(repeat_number, int) or isinstance(repeat_number, bool) or not 1 <= repeat_number <= repeats or repeat_number in seen_repeats:
+                    errors.append(f"evaluation case {case_id!r} has invalid repeat identifiers for {target!r}")
+                else:
+                    seen_repeats.add(repeat_number)
+                if run.get("treatment_status") != "completed":
+                    errors.append(f"evaluation case {case_id!r} has missing treatment evidence for {target!r}")
+                treatment_ids = run.get("treatment_loaded_skill_ids")
+                if not isinstance(treatment_ids, list) or not all(isinstance(item, str) for item in treatment_ids):
+                    errors.append(f"evaluation case {case_id!r} must record repeat-level loaded skill IDs for {target!r}")
+                    treatment_ids = []
+                observed_loaded.update(treatment_ids)
+                target_was_loaded = target_skill in treatment_ids
+                target_runs += int(target_was_loaded)
+                if case.get("status") == "passed" and (
+                    target_was_loaded != definition["expected_activation"]
+                ):
                     errors.append(f"evaluation case {case_id!r} records a false activation for {target!r}")
+                activation_passed = run.get("activation_passed")
+                if not isinstance(activation_passed, bool):
+                    errors.append(f"evaluation case {case_id!r} must record repeat-level activation evidence for {target!r}")
+                elif activation_passed is not (target_was_loaded == definition["expected_activation"]):
+                    errors.append(f"evaluation case {case_id!r} has inconsistent repeat-level activation evidence for {target!r}")
+                treatment_scores = run.get("treatment_scores")
+                criteria_count = len(definition["success_criteria"])
+                if not isinstance(treatment_scores, list) or len(treatment_scores) != criteria_count or not all(type(item) is bool for item in treatment_scores):
+                    errors.append(f"evaluation case {case_id!r} must record every treatment criterion score for {target!r}")
+                    treatment_scores = []
+                baseline_status = run.get("baseline_status")
+                baseline_ids = run.get("baseline_loaded_skill_ids")
+                baseline_scores = run.get("baseline_scores")
+                if definition["kind"] == "task":
+                    if baseline_status != "completed":
+                        errors.append(f"task case {case_id!r} has missing baseline evidence for {target!r}")
+                    if not isinstance(baseline_ids, list) or not all(isinstance(item, str) for item in baseline_ids):
+                        errors.append(f"task case {case_id!r} must record repeat-level baseline skill IDs for {target!r}")
+                        baseline_ids = []
+                    observed_baseline.update(baseline_ids)
+                    if not isinstance(baseline_scores, list) or len(baseline_scores) != criteria_count or not all(type(item) is bool for item in baseline_scores):
+                        errors.append(f"task case {case_id!r} must record every baseline criterion score for {target!r}")
+                        baseline_scores = []
+                    elif case.get("status") == "passed":
+                        policy = definition["comparison_policy"]
+                        treatment_score, baseline_score = sum(treatment_scores), sum(baseline_scores)
+                        if (not all(treatment_scores)
+                                or (policy == "uplift" and treatment_score <= baseline_score)
+                                or (policy == "no-regression" and treatment_score < baseline_score)):
+                            errors.append(f"task case {case_id!r} does not satisfy its rubric comparison for {target!r}")
+                elif baseline_status is not None or baseline_ids is not None or baseline_scores is not None:
+                    errors.append(f"trigger case {case_id!r} must not claim baseline results for {target!r}")
+                safety_regression = run.get("safety_regression")
+                if not isinstance(safety_regression, bool):
+                    errors.append(f"evaluation case {case_id!r} must record repeat-level safety evidence for {target!r}")
+                elif safety_regression:
+                    safety_observed = True
+                    errors.append(f"evaluation case {case_id!r} records a safety regression for {target!r}")
+            if sorted(observed_loaded) != sorted(loaded_skills):
+                errors.append(f"evaluation case {case_id!r} loaded skill summary does not match repeat evidence for {target!r}")
+            if runs_with_target != target_runs:
+                errors.append(f"evaluation case {case_id!r} target-skill count does not match repeat evidence for {target!r}")
+            if case.get("status") == "passed" and any(
+                (run.get("activation_passed") is not True or not all(run.get("treatment_scores") or []))
+                for run in run_evidence if isinstance(run, dict)
+            ):
+                errors.append(f"evaluation case {case_id!r} has a failed repeat in a passing result for {target!r}")
             safety_regression = case.get("safety_regression")
             if not isinstance(safety_regression, bool):
                 errors.append(f"evaluation case {case_id!r} must record safety_regression for {target!r}")
-            elif safety_regression:
+            elif safety_regression or safety_observed:
                 errors.append(f"evaluation case {case_id!r} records a safety regression for {target!r}")
             if case.get("status") == "failed" and not definition["critical"]:
                 rationale = case.get("rationale")
@@ -122,9 +201,13 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                 baseline_repeats = case.get("baseline_repeats")
                 if not isinstance(baseline_repeats, int) or isinstance(baseline_repeats, bool) or baseline_repeats < definition["repeats"]:
                     errors.append(f"task case {case_id!r} needs enough baseline repeats for {target!r}")
+                elif baseline_repeats != repeats:
+                    errors.append(f"task case {case_id!r} baseline repeats must match paired treatment repeats for {target!r}")
                 baseline_loaded_skills = case.get("baseline_loaded_skill_ids")
                 if not isinstance(baseline_loaded_skills, list) or not all(isinstance(item, str) for item in baseline_loaded_skills):
                     errors.append(f"task case {case_id!r} must list baseline-loaded skill IDs for {target!r}")
+                elif sorted(observed_baseline) != sorted(baseline_loaded_skills):
+                    errors.append(f"task case {case_id!r} baseline skill summary does not match repeat evidence for {target!r}")
             if definition["critical"] and case.get("status") != "passed":
                 errors.append(f"critical evaluation case failed for {target!r}: {case_id}")
     return errors

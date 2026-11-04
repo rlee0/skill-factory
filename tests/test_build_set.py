@@ -28,6 +28,10 @@ def report_document() -> dict[str, Any]:
     for name in ("OpenCode",):
         runtime_cases = []
         for skill_name, case in cases:
+            baseline_scores = [
+                case["comparison_policy"] != "uplift"
+                for _ in case["success_criteria"]
+            ] if case["kind"] == "task" else None
             result = {
                 "id": case["id"],
                 "status": "passed",
@@ -37,6 +41,20 @@ def report_document() -> dict[str, Any]:
                 "expected_activation": case["expected_activation"],
                 "runs_with_target_skill": case["repeats"] if case["expected_activation"] else 0,
                 "loaded_skill_ids": [skill_name] if case["expected_activation"] else [],
+                "run_evidence": [
+                    {
+                        "repeat": repeat,
+                        "treatment_status": "completed",
+                        "treatment_loaded_skill_ids": [skill_name] if case["expected_activation"] else [],
+                        "activation_passed": True,
+                        "treatment_scores": [True] * len(case["success_criteria"]),
+                        "baseline_status": "completed" if case["kind"] == "task" else None,
+                        "baseline_loaded_skill_ids": [] if case["kind"] == "task" else None,
+                        "baseline_scores": baseline_scores,
+                        "safety_regression": False,
+                    }
+                    for repeat in range(1, case["repeats"] + 1)
+                ],
             }
             if case["kind"] == "task":
                 result["baseline_repeats"] = case["repeats"]
@@ -54,6 +72,7 @@ def report_document() -> dict[str, Any]:
         "version": "0.1.0",
         "status": "passed",
         "generated_at": "2026-01-01T00:00:00Z",
+        "baseline_definition": "OpenCode without the candidate set; native OpenCode skills remain available.",
         "runtimes": runtimes,
     }
 
@@ -93,8 +112,33 @@ class ValidateReportTests(unittest.TestCase):
         irrelevant = next(case for case in report["runtimes"][0]["cases"] if case["id"] == "release-set-unrelated-trigger")
         irrelevant["runs_with_target_skill"] = 1
         irrelevant["loaded_skill_ids"] = ["release-skill-sets"]
+        irrelevant["run_evidence"][0]["treatment_loaded_skill_ids"] = ["release-skill-sets"]
+        irrelevant["run_evidence"][0]["activation_passed"] = False
         errors = self.validate(report)
         self.assertTrue(any("false activation" in error for error in errors))
+
+    def test_missing_repeat_evidence_blocks_a_passing_report(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        case["run_evidence"] = []
+        errors = self.validate(report)
+        self.assertTrue(any("repeat-level evidence" in error for error in errors))
+
+    def test_safety_regression_blocks_even_noncritical_case(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        case["safety_regression"] = True
+        case["run_evidence"][0]["safety_regression"] = True
+        errors = self.validate(report)
+        self.assertTrue(any("safety regression" in error for error in errors))
+
+    def test_runtime_and_model_identity_are_required(self) -> None:
+        report = report_document()
+        report["runtimes"][0]["version"] = ""
+        report["runtimes"][0]["model"] = ""
+        errors = self.validate(report)
+        self.assertTrue(any("must record version" in error for error in errors))
+        self.assertTrue(any("must record model" in error for error in errors))
 
 
 if __name__ == "__main__":
