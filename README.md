@@ -15,7 +15,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 
 [`sets/skill-factory/`](sets/skill-factory/) contains seven focused skills:
 
-- `author-skills` — design and write a portable skill.
+- `author-skills` — author or revise a portable skill from an approved design, independently of the coordinator.
 - `create-skill-set` — coordinate the factory workflow, approval gates, and phase handoffs.
 - `design-skill-set` — define tailored set membership, responsibilities, handoffs, and runtime assumptions.
 - `discover-domain` — elicit and review domain context.

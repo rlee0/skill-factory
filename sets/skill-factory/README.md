@@ -6,7 +6,7 @@
 
 | Skill | Use it when |
 | --- | --- |
-| [`author-skills`](skills/author-skills/SKILL.md) | Designing or writing an Agent Skills-format skill. |
+| [`author-skills`](skills/author-skills/SKILL.md) | Authoring or revising an independently usable Agent Skill from an approved design or bounded standalone request. |
 | [`create-skill-set`](skills/create-skill-set/SKILL.md) | Coordinating the end-to-end factory workflow, decisions, approvals, and handoffs. |
 | [`design-skill-set`](skills/design-skill-set/SKILL.md) | Designing tailored membership, responsibilities, handoffs, optional capabilities, and runtime assumptions from approved inputs. |
 | [`discover-domain`](skills/discover-domain/SKILL.md) | Eliciting and reviewing the users, workflows, constraints, risks, and open questions behind a domain brief. |
