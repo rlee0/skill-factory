@@ -13,7 +13,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 
 ## First-party pilot
 
-[`sets/skill-factory/`](sets/skill-factory/) contains ten focused skills:
+[`sets/skill-factory/`](sets/skill-factory/) contains eleven focused skills:
 
 - `author-skills` — author or revise a portable skill from an approved design, independently of the coordinator.
 - `create-skill-set` — coordinate the factory workflow, approval gates, and phase handoffs.
@@ -24,6 +24,7 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 - `map-skill-opportunities` — derive and prioritize bounded skill candidates.
 - `research-domain` — deepen a domain brief with focused, trustworthy sources.
 - `release-skill-sets` — prepare a versioned set release.
+- `runtime-adaptation` — conditionally document named runtime differences and assess runtime support evidence.
 - `review-safety` — review safety and security risks, require expert sign-off for consequential use, and enforce release gates.
 
 The pilot supports OpenCode only. Its restricted local runner supports manual review; protected pull-request CI evaluates changed skills with OpenCode and a tool-disabled rubric judge. Raw CI traces are ephemeral, and only sanitized results are retained. See the [evaluation protocol](docs/evaluation.md) and run `bash scripts/setup-skill-evaluations.sh` to configure the protected API-key secret.
