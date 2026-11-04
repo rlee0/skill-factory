@@ -24,7 +24,7 @@ Use this skill independently to turn approved domain context and opportunities i
 4. **Assess optional capabilities.** Keep specialist capabilities out unless the approved context justifies them. Consider:
    - deeper source research (for example, `research-domain`) for consequential, changing, disputed, or evidence-intensive claims;
    - durable domain modeling for extensive shared terminology, rules, or cross-skill decisions that need maintenance;
-   - tool/script integration only when an authorized tool materially improves the workflow and its permissions, failure behavior, and evaluation path can be specified;
+   - tool/script integration (`integrate-tools-safely`) when an authorized tool materially improves the workflow; use it to specify safeguards and determine whether an appropriate sandboxed evaluation path is available;
    - runtime-specific adaptation only when a named runtime has a concrete requirement not met by the portable design.
 
    State the case-specific need, boundaries, dependencies, and review/evaluation requirement for each included specialist. Otherwise mark it deferred or not needed; do not add capabilities speculatively.
