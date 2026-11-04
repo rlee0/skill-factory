@@ -10,6 +10,8 @@
 | [`create-skill-set`](skills/create-skill-set/SKILL.md) | Coordinating the end-to-end factory workflow, decisions, approvals, and handoffs. |
 | [`design-skill-set`](skills/design-skill-set/SKILL.md) | Designing tailored membership, responsibilities, handoffs, optional capabilities, and runtime assumptions from approved inputs. |
 | [`discover-domain`](skills/discover-domain/SKILL.md) | Eliciting and reviewing the users, workflows, constraints, risks, and open questions behind a domain brief. |
+| [`domain-modeling`](skills/domain-modeling/SKILL.md) | Clarifying shared domain language, testing conceptual boundaries, and recording significant domain decisions when useful. |
+| [`research-domain`](skills/research-domain/SKILL.md) | Deepening a reviewed domain brief with focused, source-backed research when the domain warrants it. |
 | [`evaluate-skills`](skills/evaluate-skills/SKILL.md) | Creating or reviewing behavioral evaluation cases and results. |
 | [`map-skill-opportunities`](skills/map-skill-opportunities/SKILL.md) | Turning an approved domain brief into prioritized, bounded skill candidates. |
 | [`release-skill-sets`](skills/release-skill-sets/SKILL.md) | Preparing a versioned, evaluated set for distribution. |

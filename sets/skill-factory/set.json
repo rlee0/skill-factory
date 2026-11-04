@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "skill-factory",
   "version": "0.1.0",
-  "description": "A guided collection for discovering domain work, designing and coordinating tailored skill sets, authoring portable skills, evaluating behavior, and preparing reviewed releases.",
+  "description": "A guided collection for discovering and modeling domain work, designing and coordinating tailored skill sets, deepening knowledge with evidence when needed, authoring portable skills, evaluating behavior, and preparing reviewed releases.",
   "license": "Apache-2.0",
   "skills": [
     {
@@ -20,6 +20,14 @@
     {
       "name": "discover-domain",
       "path": "skills/discover-domain"
+    },
+    {
+      "name": "domain-modeling",
+      "path": "skills/domain-modeling"
+    },
+    {
+      "name": "research-domain",
+      "path": "skills/research-domain"
     },
     {
       "name": "evaluate-skills",
