@@ -6,11 +6,6 @@
   "baseline_definition": "OpenCode runtime without the candidate set; runtime-provided skills remain available.",
   "evidence_provenance": {
     "candidate_base_commit": "e1c8c56c23b11e578b43cdf03af4358b51676017",
-    "candidate_set_worktree_changes": [
-      "sets/skill-factory/skills/integrate-tools-safely/SKILL.md",
-      "sets/skill-factory/skills/integrate-tools-safely/evals/cases.json",
-      "sets/skill-factory/set.json (release metadata only)"
-    ],
     "reused_targeted_candidate_commit": "e1c8c56c23b11e578b43cdf03af4358b51676017",
     "reused_full_run_candidate_commit": "73c44f0c188ded693c67825e3f6a56041a39ae95",
     "reused_retry_candidate_commit": "e200700e76f5ef1aaad36c9990001112c4ccb725",
@@ -44,7 +39,13 @@
     "release_candidate_tree_sha256_excluding_reports": "ae0f3c998473963f576fd10dd77491beccbdde6979f783fe819b3462d488104d",
     "source_full_report_reference": "r8-recovered sanitized aggregate report; reused case votes and repeat evidence are embedded in this report",
     "raw_trace_handling": "Treatment/baseline response text was reviewed locally and is intentionally not distributed; structured judge votes, human scores, criterion rationales, case/repeat identifiers, and runtime/model identity are retained in this report.",
-    "canonical_report_promoted_at": "2026-11-05T17:58:46.376087+00:00"
+    "canonical_report_promoted_at": "2026-11-05T17:58:46.376087+00:00",
+    "candidate_source_commit": "a007f1dc28bc10ef5225d75932d6467a6a45d1ba",
+    "candidate_set_changes_from_base": [
+      "sets/skill-factory/skills/integrate-tools-safely/SKILL.md",
+      "sets/skill-factory/skills/integrate-tools-safely/evals/cases.json",
+      "sets/skill-factory/set.json (release metadata only)"
+    ]
   },
   "runtimes": [
     {

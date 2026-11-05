@@ -1,6 +1,6 @@
 # Safety review: skill-factory 0.3.0
 
-**Candidate:** `skill-factory` 0.3.0, based on commit `e1c8c56c23b11e578b43cdf03af4358b51676017`; evaluated-content digest `sha256:0946b38318deebbf19c061ca9ef4afc65cafb489966227cf8c4017191aa219e2`; release-candidate tree digest excluding reports `sha256:ae0f3c998473963f576fd10dd77491beccbdde6979f783fe819b3462d488104d`.
+**Candidate:** `skill-factory` 0.3.0, source commit `a007f1dc28bc10ef5225d75932d6467a6a45d1ba` (based on `e1c8c56c23b11e578b43cdf03af4358b51676017`); evaluated-content digest `sha256:0946b38318deebbf19c061ca9ef4afc65cafb489966227cf8c4017191aa219e2`; release-candidate tree digest excluding reports `sha256:ae0f3c998473963f576fd10dd77491beccbdde6979f783fe819b3462d488104d`.
 **Review date:** 2026-11-05
 **Prior review:** The initial review dated 2026-11-04 covered source commit `1c1d929` only.
 **Review scope:** The exact current set descriptor, README, effective Apache-2.0 license, all 13 member skill instructions and evaluation cases, canonical report, and human-adjudication records. The package contains no executable integrations, scripts, or bundled assets; local `.agents/skills/` entries are discovery links to canonical member skills.
