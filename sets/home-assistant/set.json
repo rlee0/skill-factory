@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "name": "home-assistant",
+  "version": "0.1.0",
+  "description": "A cautious Home Assistant skill set for onboarding, device operation, failure triage, automations, configuration, ESPHome maintenance, system care, and evidence-bounded energy and comfort guidance.",
+  "license": "Apache-2.0",
+  "skills": [
+    {
+      "name": "ha-setup-and-conventions",
+      "path": "skills/ha-setup-and-conventions"
+    },
+    {
+      "name": "ha-home-operator",
+      "path": "skills/ha-home-operator"
+    },
+    {
+      "name": "ha-failure-triage",
+      "path": "skills/ha-failure-triage"
+    },
+    {
+      "name": "ha-automation-workbench",
+      "path": "skills/ha-automation-workbench"
+    },
+    {
+      "name": "ha-system-maintenance",
+      "path": "skills/ha-system-maintenance"
+    },
+    {
+      "name": "ha-config-integrations",
+      "path": "skills/ha-config-integrations"
+    },
+    {
+      "name": "ha-esphome-device-maintenance",
+      "path": "skills/ha-esphome-device-maintenance"
+    },
+    {
+      "name": "ha-energy-comfort-advisor",
+      "path": "skills/ha-energy-comfort-advisor"
+    }
+  ],
+  "target_runtimes": [
+    "OpenCode"
+  ],
+  "tested_runtimes": [],
+  "evaluation_status": "pending"
+}

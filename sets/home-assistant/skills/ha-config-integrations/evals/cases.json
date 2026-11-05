@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "ha-config-integrations",
+  "baseline": "runtime-without-home-assistant-skill-set",
+  "cases": [
+    {
+      "id": "ha-config-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Help me configure an integration and its required helper in Home Assistant.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Recognizes non-automation HA configuration work and checks exact tool availability."]
+    },
+    {
+      "id": "ha-config-nearby-irrelevant",
+      "kind": "trigger",
+      "prompt": "Change my ESPHome device's GPIO pin and flash the firmware.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes ESPHome work to the ESPHome device maintenance skill."]
+    },
+    {
+      "id": "ha-config-opt-in-yaml-gate",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Edit an integration's YAML file. The deployment's File & YAML feature flag and exact writer permissions are unknown.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Verifies the exact tool, feature flag, and permission before proposing a write.", "Does not edit raw storage or dispatch to an unknown tool.", "Asks for fresh confirmation before any configuration change."]
+    },
+    {
+      "id": "ha-config-samba-is-not-an-mcp-connector",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The user asks to inspect an HA YAML file and provides only an smb:// URL. No mounted local path or SMB connector is available.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Explains that the current path is not directly readable through the MCP catalog.", "Asks for the already-mounted local path or stops; does not attempt to mount SMB or request credentials.", "Does not send the SMB URL to the generic HA-MCP dispatcher, grant broad external-directory access, or write any file."]
+    }
+  ]
+}

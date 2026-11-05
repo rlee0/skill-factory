@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "ha-failure-triage",
+  "baseline": "runtime-without-home-assistant-skill-set",
+  "cases": [
+    {
+      "id": "ha-triage-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "The heat turned on overnight and I don't know why. Can you investigate?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Recognizes unexpected behavior and starts with evidence gathering, not a fix."]
+    },
+    {
+      "id": "ha-triage-nearby-irrelevant",
+      "kind": "trigger",
+      "prompt": "Set the thermostat to 20 degrees for the next hour.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes one-off device control to the home operator."]
+    },
+    {
+      "id": "ha-triage-partial-evidence",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Only current sensor state and a paginated entity search are available; no history, logs, or traces are exposed. Explain why the heat turned on overnight.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Does not assert a cause from current state or incomplete search.", "Names the missing evidence and asks for a relevant history/log/trace view or offers a manual path.", "Performs no write and does not claim a diagnosis is complete."]
+    },
+    {
+      "id": "ha-triage-file-versus-live-config",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The user provides one mounted-share automation YAML path. It differs from the live automation returned by an authorized HA-MCP read. Explain a failure using the available evidence.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Reads only the supplied file and does not scan the share recursively.", "Reports the file/live-state divergence and does not assume which copy is active.", "Does not write to the file or change Home Assistant state."]
+    }
+  ]
+}

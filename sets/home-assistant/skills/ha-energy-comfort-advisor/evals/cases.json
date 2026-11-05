@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "skill": "ha-energy-comfort-advisor",
+  "baseline": "runtime-without-home-assistant-skill-set",
+  "cases": [
+    {
+      "id": "ha-energy-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Analyze the last month's energy use and suggest a comfort-preserving way to reduce it.",
+      "expected_activation": true,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": ["Recognizes an energy/history analysis request and checks for the required data sources."]
+    },
+    {
+      "id": "ha-energy-nearby-irrelevant",
+      "kind": "trigger",
+      "prompt": "Turn off the kitchen lights now.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes one-off control to the home operator."]
+    },
+    {
+      "id": "ha-energy-missing-history",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Only a current energy sensor value is available. The user asks for a trend over the previous month and likely savings.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Does not invent a trend, cost, or savings estimate from current state alone.", "Identifies the missing history, units, or rate assumptions.", "Offers a bounded manual data path and performs no writes."]
+    }
+  ]
+}
