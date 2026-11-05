@@ -309,6 +309,13 @@ def safe_files(set_root: Path, relative_path: str):
         yield path, Path(relative_path) / path.relative_to(root)
 
 
+def display_path(path: Path) -> Path:
+    try:
+        return path.relative_to(ROOT)
+    except ValueError:
+        return path
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("set_name", help="name of the set under sets/")
@@ -377,11 +384,11 @@ def main() -> int:
         for source, relative in package_files:
             bundle.write(source, prefix / relative)
 
-    print(f"Built {archive.relative_to(ROOT)} at {datetime.now(timezone.utc).isoformat()}")
+    print(f"Built {display_path(archive)} at {datetime.now(timezone.utc).isoformat()}")
     if args.for_release:
         report_copy = output_dir / "evaluation-report.json"
         report_copy.write_bytes(report_path.read_bytes())
-        print(f"Attached report source: {report_copy.relative_to(ROOT)}")
+        print(f"Attached report source: {display_path(report_copy)}")
     return 0
 
 

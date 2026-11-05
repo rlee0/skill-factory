@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import io
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
-from tools.build_set import validate_report
+from tools.build_set import main as build_main, validate_report
 from tools.evaluation_contract import RUBRIC_JUDGE_VOTES
 
 
@@ -347,6 +350,23 @@ class ValidateReportTests(unittest.TestCase):
         errors = self.validate(report)
         self.assertTrue(any("must record version" in error for error in errors))
         self.assertTrue(any("must record model" in error for error in errors))
+
+
+class BuildCommandTests(unittest.TestCase):
+    def test_absolute_output_outside_repo_builds_successfully(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_dir = Path(temp_dir)
+            archive = output_dir / "home-assistant-0.1.0.zip"
+            output = io.StringIO()
+            with patch(
+                "sys.argv",
+                ["build_set.py", "home-assistant", "--output", str(output_dir)],
+            ), redirect_stdout(output):
+                result = build_main()
+
+            self.assertEqual(0, result)
+            self.assertTrue(archive.is_file())
+            self.assertIn(str(archive), output.getvalue())
 
 
 if __name__ == "__main__":
