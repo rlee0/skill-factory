@@ -1,5 +1,7 @@
 # Meta-Skill Set Factory
 
+> Historical snapshot preserved during the November 2026 GitHub issue migration. GitHub issue [#2](https://github.com/rlee0/skill-factory/issues/2) is canonical; the status and decisions below describe the archived snapshot, not the current issue state.
+
 Status: ready-for-agent
 
 ## Problem Statement
