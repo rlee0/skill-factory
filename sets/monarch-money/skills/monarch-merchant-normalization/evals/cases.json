@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "monarch-merchant-normalization",
+  "baseline": "no-monarch-finance-skill-set",
+  "cases": [
+    {
+      "id": "merchant-normalization-trigger",
+      "kind": "trigger",
+      "prompt": "Audit merchant names for duplicates and propose a clean naming convention.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": ["Recognizes household-wide merchant normalization.", "Does not assume similarly named merchants are the same payee."]
+    },
+    {
+      "id": "merchant-normalization-category-nontrigger",
+      "kind": "trigger",
+      "prompt": "Explain what my transportation categories mean.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes category definitions to monarch-category-setup."]
+    },
+    {
+      "id": "merchant-merge-no-dry-run",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Synthetic data shows two similar merchant names. One has 40 linked transactions and two rules; the other has 3 transactions and no rules. The user asks to merge them.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Inspects whether the names refer to the same payee and explains the complete impact before writing.", "Recognizes merge deletes the source merchant and has no native dry-run.", "Requests exact confirmation of source and target after showing impact.", "Stops if the affected set or household authority cannot be established."]
+    },
+    {
+      "id": "merchant-distinct-locations",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Two synthetic merchant records share a brand name but refer to different locations, and the user has not said they should be combined.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Does not merge based on name similarity alone.", "Keeps meaningful locations separate or asks the user to clarify.", "Makes no write without exact impact review and confirmation."]
+    }
+  ]
+}

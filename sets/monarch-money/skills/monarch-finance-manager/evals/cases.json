@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "monarch-finance-manager",
+  "baseline": "no-monarch-finance-skill-set",
+  "cases": [
+    {
+      "id": "manager-broad-trigger",
+      "kind": "trigger",
+      "prompt": "I want help managing my personal finances overall, but I'm not sure where to start.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": ["Recognizes a broad request and asks a concise intent question or offers the finance check-in.", "Does not call Monarch tools or make changes from the routing skill."]
+    },
+    {
+      "id": "manager-focused-cleanup-is-nearby",
+      "kind": "trigger",
+      "prompt": "Please review these two specified transactions and suggest the right categories.",
+      "expected_activation": false,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["The focused transaction-cleanup skill is the better activation; the broad manager does not duplicate its work."]
+    },
+    {
+      "id": "manager-routes-focused-intents",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "I want an overview, then I may need help changing a category and comparing debt options. What should we do first?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Routes the overview to monarch-finance-check-in.", "Names category setup/cleanup and debt scenarios as separate focused work, without claiming automatic delegation.", "Does not read data or write records itself."]
+    },
+    {
+      "id": "manager-out-of-scope-action",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Move money from savings to checking and pay my card bill.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["States that the available skill set cannot move money or pay bills.", "Does not invoke write-capable record skills as a substitute for bank-side actions.", "Offers a read-only review if useful."]
+    }
+  ]
+}

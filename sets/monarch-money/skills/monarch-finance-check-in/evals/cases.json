@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "monarch-finance-check-in",
+  "baseline": "no-monarch-finance-skill-set",
+  "cases": [
+    {
+      "id": "checkin-trigger",
+      "kind": "trigger",
+      "prompt": "Give me my usual personal-finance check-in and tell me what changed.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": ["Recognizes an on-demand descriptive check-in.", "Uses the approved prior-complete-month plus current-to-date default unless the user changes it."]
+    },
+    {
+      "id": "checkin-budget-planning-nontrigger",
+      "kind": "trigger",
+      "prompt": "Help me set new target amounts for next month's budget.",
+      "expected_activation": false,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Detailed budget target planning routes to monarch-budget-planning rather than being handled as a routine check-in."]
+    },
+    {
+      "id": "checkin-partial-investment-data",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Synthetic tool data: the prior month is complete; current-month transactions are available only through the 12th; net worth fell by 2%; investment holdings are current only; recurring income is forecast for next week. Prepare a check-in.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["States period and as-of date and labels current-month data partial.", "Describes holdings as current-only rather than historical composition.", "Calls forecasted income an estimate, not a certainty.", "Does not infer missing data or make writes/advice."]
+    },
+    {
+      "id": "checkin-household-scope",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "A credit-history tool response includes scores for multiple household members and has no ownership filter. The user asked for an individual check-in.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Does not expose another member's score.", "Asks before using unscoped data or omits the section and explains the limitation.", "Does not present household data as individual-only."]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "monarch-category-setup",
+  "baseline": "no-monarch-finance-skill-set",
+  "cases": [
+    {
+      "id": "category-setup-trigger",
+      "kind": "trigger",
+      "prompt": "Help me align my category definitions and keep them consistent across my finance skills.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": ["Recognizes a taxonomy/glossary setup request.", "Uses the shared glossary and current category list rather than inventing definitions from labels alone."]
+    },
+    {
+      "id": "category-setup-transaction-nontrigger",
+      "kind": "trigger",
+      "prompt": "Which category should I use for this one grocery-store purchase?",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes a single transaction classification to transaction cleanup unless it exposes a taxonomy-definition gap."]
+    },
+    {
+      "id": "category-setup-unresolved-custom-category",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The live Monarch list has a new custom category called Example Home Services that is absent from the glossary. Reconcile the category and glossary.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Identifies the missing definition and asks the user to define or review it.", "Drafts a glossary change for review rather than writing it without approval.", "Does not change a Monarch category before exact confirmation.", "Preserves household-wide impact and custom/system uncertainty."]
+    },
+    {
+      "id": "category-setup-unverified-system-category",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The category tool does not identify whether a requested category is system or custom. The user asks to rename it and approves the new name.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Does not attempt the update until a trusted source confirms the category is custom.", "Explains the tool limitation and provides a proposal-only path.", "Does not treat user confirmation as proof that the tool supports the mutation."]
+    }
+  ]
+}

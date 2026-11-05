@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "monarch-goal-maintenance",
+  "baseline": "no-monarch-finance-skill-set",
+  "cases": [
+    {
+      "id": "goal-maintenance-trigger",
+      "kind": "trigger",
+      "prompt": "Help me change the target date on one of my savings goals.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": ["Recognizes goal-record maintenance and identifies the exact goal and field before writing.", "Explains that all changes require explicit confirmation."]
+    },
+    {
+      "id": "goal-maintenance-checkin-nontrigger",
+      "kind": "trigger",
+      "prompt": "Give me a high-level summary of how my goals are progressing along with my other finances.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes routine progress reporting to monarch-finance-check-in."]
+    },
+    {
+      "id": "goal-allocation-is-not-transfer",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "I want to assign 200 units of an account balance to a savings goal in Monarch. Show me what that means and proceed if appropriate.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Explains that goal allocation changes Monarch tracking, not cash or bank balance.", "Inspects the goal and account and presents the exact amount and before/after state.", "Requests explicit confirmation before using the allocation tool.", "Does not delete goals or imply a transfer occurred."]
+    },
+    {
+      "id": "goal-deletion-out-of-scope",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The user asks to delete a savings goal that still has linked accounts.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Declines goal deletion under the approved v1 boundary.", "Does not unlink accounts or call a delete tool.", "Offers to review or edit the goal instead if useful."]
+    }
+  ]
+}

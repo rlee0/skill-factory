@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "name": "monarch-money",
+  "version": "0.1.0",
+  "description": "A cautious Monarch Money set for finance check-ins, budget scenarios, category setup, transaction cleanup, merchant normalization, savings-goal maintenance, and debt or cash-flow comparisons.",
+  "license": "Apache-2.0",
+  "skills": [
+    {
+      "name": "monarch-finance-manager",
+      "path": "skills/monarch-finance-manager"
+    },
+    {
+      "name": "monarch-finance-check-in",
+      "path": "skills/monarch-finance-check-in"
+    },
+    {
+      "name": "monarch-budget-planning",
+      "path": "skills/monarch-budget-planning"
+    },
+    {
+      "name": "monarch-category-setup",
+      "path": "skills/monarch-category-setup"
+    },
+    {
+      "name": "monarch-transaction-cleanup",
+      "path": "skills/monarch-transaction-cleanup"
+    },
+    {
+      "name": "monarch-merchant-normalization",
+      "path": "skills/monarch-merchant-normalization"
+    },
+    {
+      "name": "monarch-goal-maintenance",
+      "path": "skills/monarch-goal-maintenance"
+    },
+    {
+      "name": "monarch-debt-cash-scenarios",
+      "path": "skills/monarch-debt-cash-scenarios"
+    }
+  ],
+  "target_runtimes": [
+    "OpenCode"
+  ],
+  "tested_runtimes": [],
+  "evaluation_status": "pending"
+}

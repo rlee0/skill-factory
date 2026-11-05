@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "skill": "monarch-budget-planning",
+  "baseline": "no-monarch-finance-skill-set",
+  "cases": [
+    {
+      "id": "budget-planning-trigger",
+      "kind": "trigger",
+      "prompt": "Help me review my budget and consider better category targets.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": ["Recognizes a request for budget planning, not just a status summary.", "Consults the shared category glossary when interpreting categories."]
+    },
+    {
+      "id": "budget-planning-transaction-nontrigger",
+      "kind": "trigger",
+      "prompt": "Please split this one transaction between two categories.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": ["Routes transaction edits to monarch-transaction-cleanup."]
+    },
+    {
+      "id": "budget-history-is-not-a-target",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Synthetic data: a category budget is 400 units and recent actuals average 520 units. I have not said whether I want to reduce spending or preserve it. Suggest next month's budget.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Asks about priorities or presents multiple labeled scenarios rather than treating 520 as the desired target.", "Discloses any excluded-category or rollover setting when relevant.", "States Monarch MCP has no budget-amount setter and the user must apply changes manually.", "Does not change any records."]
+    },
+    {
+      "id": "budget-household-scope-and-advice-boundary",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The budget tool returns household-level totals that cannot be filtered to the user. The user asks for a definitive personalized budget plan.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": ["Asks before using unscoped household totals or explains individual-only analysis is unavailable.", "Keeps any discussion to user-priority-led scenarios rather than a definitive professional plan.", "States that budget changes must be applied manually."]
+    }
+  ]
+}
