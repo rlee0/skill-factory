@@ -13,8 +13,10 @@ from typing import Any
 
 try:
     from .check_repo import ROOT, read_json, validate_repo
+    from .evaluation_contract import RUBRIC_JUDGE_VOTES
 except ImportError:  # Direct script execution.
     from check_repo import ROOT, read_json, validate_repo
+    from evaluation_contract import RUBRIC_JUDGE_VOTES
 
 
 def validate_report(report_path: Path, set_name: str, version: str, targets: list[str]) -> list[str]:
@@ -146,11 +148,67 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                     errors.append(f"evaluation case {case_id!r} must record repeat-level activation evidence for {target!r}")
                 elif activation_passed is not (target_was_loaded == definition["expected_activation"]):
                     errors.append(f"evaluation case {case_id!r} has inconsistent repeat-level activation evidence for {target!r}")
+                if run.get("judge_status") != "completed":
+                    errors.append(f"evaluation case {case_id!r} has incomplete aggregate judge status for {target!r}")
                 treatment_scores = run.get("treatment_scores")
                 criteria_count = len(definition["success_criteria"])
                 if not isinstance(treatment_scores, list) or len(treatment_scores) != criteria_count or not all(type(item) is bool for item in treatment_scores):
                     errors.append(f"evaluation case {case_id!r} must record every treatment criterion score for {target!r}")
                     treatment_scores = []
+                baseline_scores = run.get("baseline_scores")
+                judge_votes = run.get("judge_votes")
+                if not isinstance(judge_votes, list) or len(judge_votes) != RUBRIC_JUDGE_VOTES:
+                    errors.append(
+                        f"evaluation case {case_id!r} needs {RUBRIC_JUDGE_VOTES} rubric judge votes per repeat for {target!r}"
+                    )
+                    judge_votes = []
+                valid_votes: list[dict[str, Any]] = []
+                for vote in judge_votes:
+                    if not isinstance(vote, dict) or vote.get("judge_status") != "completed":
+                        errors.append(f"evaluation case {case_id!r} has incomplete rubric judge votes for {target!r}")
+                        continue
+                    vote_treatment = vote.get("treatment_scores")
+                    vote_baseline = vote.get("baseline_scores")
+                    vote_safety = vote.get("safety_regression")
+                    if (not isinstance(vote_treatment, list) or len(vote_treatment) != criteria_count
+                            or not all(type(item) is bool for item in vote_treatment)):
+                        errors.append(f"evaluation case {case_id!r} has invalid treatment rubric votes for {target!r}")
+                        continue
+                    if definition["kind"] == "task":
+                        if (not isinstance(vote_baseline, list) or len(vote_baseline) != criteria_count
+                                or not all(type(item) is bool for item in vote_baseline)):
+                            errors.append(f"task case {case_id!r} has invalid baseline rubric votes for {target!r}")
+                            continue
+                    elif vote_baseline is not None:
+                        errors.append(f"trigger case {case_id!r} has unexpected baseline rubric votes for {target!r}")
+                        continue
+                    if type(vote_safety) is not bool:
+                        errors.append(f"evaluation case {case_id!r} has invalid safety judge votes for {target!r}")
+                        continue
+                    valid_votes.append(vote)
+                if len(valid_votes) == RUBRIC_JUDGE_VOTES:
+                    majority = RUBRIC_JUDGE_VOTES // 2 + 1
+                    expected_treatment = [
+                        sum(vote["treatment_scores"][index] for vote in valid_votes) >= majority
+                        for index in range(criteria_count)
+                    ]
+                    if treatment_scores != expected_treatment:
+                        errors.append(f"evaluation case {case_id!r} treatment scores do not match judge majority for {target!r}")
+                    expected_safety = any(vote["safety_regression"] for vote in valid_votes)
+                    if run.get("safety_regression") is not expected_safety:
+                        errors.append(f"evaluation case {case_id!r} safety result does not conservatively aggregate judge votes for {target!r}")
+                    if definition["kind"] == "task" and all(
+                        isinstance(vote.get("baseline_scores"), list)
+                        and len(vote["baseline_scores"]) == criteria_count
+                        and all(type(item) is bool for item in vote["baseline_scores"])
+                        for vote in valid_votes
+                    ):
+                        expected_baseline = [
+                            sum(vote["baseline_scores"][index] for vote in valid_votes) >= majority
+                            for index in range(criteria_count)
+                        ]
+                        if baseline_scores != expected_baseline:
+                            errors.append(f"task case {case_id!r} baseline scores do not match judge majority for {target!r}")
                 baseline_status = run.get("baseline_status")
                 baseline_ids = run.get("baseline_loaded_skill_ids")
                 baseline_scores = run.get("baseline_scores")

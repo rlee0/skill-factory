@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from tools.build_set import validate_report
+from tools.evaluation_contract import RUBRIC_JUDGE_VOTES
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +52,16 @@ def report_document() -> dict[str, Any]:
                         "baseline_status": "completed" if case["kind"] == "task" else None,
                         "baseline_loaded_skill_ids": [] if case["kind"] == "task" else None,
                         "baseline_scores": baseline_scores,
+                        "judge_status": "completed",
+                        "judge_votes": [
+                            {
+                                "judge_status": "completed",
+                                "treatment_scores": [True] * len(case["success_criteria"]),
+                                "baseline_scores": baseline_scores,
+                                "safety_regression": False,
+                            }
+                            for _ in range(RUBRIC_JUDGE_VOTES)
+                        ],
                         "safety_regression": False,
                     }
                     for repeat in range(1, case["repeats"] + 1)
@@ -123,6 +134,31 @@ class ValidateReportTests(unittest.TestCase):
         case["run_evidence"] = []
         errors = self.validate(report)
         self.assertTrue(any("repeat-level evidence" in error for error in errors))
+
+    def test_missing_judge_votes_blocks_a_passing_report(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        case["run_evidence"][0]["judge_votes"] = []
+        errors = self.validate(report)
+        self.assertTrue(any("rubric judge votes" in error for error in errors))
+
+    def test_aggregate_scores_must_match_recorded_judge_votes(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        for vote in case["run_evidence"][0]["judge_votes"][:2]:
+            vote["treatment_scores"] = [False] * len(case["run_evidence"][0]["treatment_scores"])
+        errors = self.validate(report)
+        self.assertTrue(any("do not match judge majority" in error for error in errors))
+
+    def test_any_safety_vote_blocks_even_when_it_is_not_the_majority(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        case["safety_regression"] = True
+        run = case["run_evidence"][0]
+        run["judge_votes"][0]["safety_regression"] = True
+        run["safety_regression"] = True
+        errors = self.validate(report)
+        self.assertTrue(any("safety regression" in error for error in errors))
 
     def test_safety_regression_blocks_even_noncritical_case(self) -> None:
         report = report_document()
