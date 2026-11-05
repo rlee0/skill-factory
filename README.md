@@ -29,9 +29,14 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 - `runtime-adaptation` — conditionally document named runtime differences and assess runtime support evidence.
 - `review-safety` — review safety and security risks, require expert sign-off for consequential use, and enforce release gates.
 
-The pilot currently targets OpenCode, but the current `0.3.0` set is pending behavioral evaluation and has no tested runtimes. The checked-in `0.1.0` report is historical and does not cover the current complete fixture set. Evaluation infrastructure and repository checks do not establish tested-runtime support or replace the release gates. See the [evaluation protocol](docs/evaluation.md); do not make a tested-runtime claim until complete evidence for the current version is reviewed.
+The `0.3.0` pilot's behavioral evaluation passed for OpenCode; see the [versioned report](sets/skill-factory/reports/0.3.0.json). The set is not yet released and awaits maintainer review of the exact report and archive; see the [safety review](docs/reviews/skill-factory-0.3.0-safety-review.md). The checked-in `0.1.0` report is historical and does not cover the current complete fixture set. Repository checks compare tested-runtime claims with the report for the exact set version, but do not establish report provenance or replace release gates. See the [evaluation protocol](docs/evaluation.md).
 
 The pilot skills are linked into `.agents/skills/` for local OpenCode discovery. Set sources remain canonical under `sets/skill-factory/`.
+
+## Additional sets
+
+- [`home-assistant`](sets/home-assistant/README.md) — eight cautious Home Assistant skills; draft, evaluation pending, no tested runtimes.
+- [`monarch-money`](sets/monarch-money/README.md) — eight Monarch Money skills; draft, evaluation pending, no tested runtimes. The packaged glossary contains only general terms, not household-specific settings.
 
 ## Quick start
 

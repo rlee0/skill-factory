@@ -181,6 +181,55 @@ def validate_skill(
     validate_cases(skill_dir, expected_name, errors, set_case_ids, root)
 
 
+def validate_evaluation_claims(
+    set_root: Path,
+    set_name: str,
+    version: Any,
+    evaluation_status: Any,
+    tested_runtimes: list[str],
+    errors: list[str],
+    root: Path,
+) -> None:
+    if evaluation_status != "passed" and not tested_runtimes:
+        return
+    if not isinstance(version, str) or not SEMVER.fullmatch(version):
+        return
+
+    report_path = set_root / "reports" / f"{version}.json"
+    label = report_path.relative_to(root)
+    if not report_path.is_file():
+        errors.append(f"{label}: missing report for current evaluation claims")
+        return
+    report = read_json(report_path, errors, root)
+    if report is None:
+        return
+    if report.get("set") != set_name:
+        errors.append(f"{label}: report set does not match set.json")
+    if report.get("version") != version:
+        errors.append(f"{label}: report version does not match set.json")
+    if evaluation_status == "passed" and report.get("status") != "passed":
+        errors.append(f"{label}: evaluation_status is 'passed' but report status is not 'passed'")
+
+    runtimes = report.get("runtimes")
+    if not isinstance(runtimes, list):
+        errors.append(f"{label}: runtimes must be an array")
+        return
+    by_name: dict[str, dict[str, Any]] = {}
+    for entry in runtimes:
+        if not isinstance(entry, dict) or not isinstance(entry.get("name"), str):
+            continue
+        name = entry["name"]
+        if name in by_name:
+            errors.append(f"{label}: duplicate runtime result for {name!r}")
+        by_name[name] = entry
+    for runtime in tested_runtimes:
+        entry = by_name.get(runtime)
+        if entry is None:
+            errors.append(f"{label}: tested runtime {runtime!r} has no report result")
+        elif entry.get("status") != "passed":
+            errors.append(f"{label}: tested runtime {runtime!r} does not have a passing report result")
+
+
 def validate_repo(require_validator: bool = False, root: Path = ROOT) -> tuple[list[str], list[str]]:
     root = root.resolve()
     errors: list[str] = []
@@ -232,6 +281,15 @@ def validate_repo(require_validator: bool = False, root: Path = ROOT) -> tuple[l
         for runtime in tested:
             if runtime not in targets:
                 errors.append(f"{label}: tested runtime {runtime!r} is not in target_runtimes")
+        validate_evaluation_claims(
+            set_root,
+            set_name,
+            descriptor.get("version"),
+            descriptor.get("evaluation_status"),
+            tested,
+            errors,
+            root,
+        )
 
         members = descriptor.get("skills")
         if not isinstance(members, list) or not members:

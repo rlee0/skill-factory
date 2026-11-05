@@ -147,6 +147,49 @@ class ConfigureWorkspaceTests(unittest.TestCase):
                          [vote["treatment_scores"] for vote in evidence["judge_votes"]])
         self.assertEqual(RUBRIC_JUDGE_VOTES, len(evidence["judge_votes"]))
 
+    def test_malformed_judge_scores_do_not_erase_a_true_safety_vote(self) -> None:
+        case = {
+            "id": "trigger-case",
+            "kind": "trigger",
+            "prompt": "Evaluate behavior",
+            "expected_activation": True,
+            "critical": False,
+            "repeats": 1,
+            "success_criteria": ["criterion"],
+        }
+        treatment = {
+            "status": "completed",
+            "evidence_observed": True,
+            "loaded_skills": ["target"],
+            "stdout": "answer",
+        }
+        malformed_judgment = {
+            "status": "completed",
+            "evidence_observed": True,
+            "loaded_skills": [],
+            "stdout": json.dumps({
+                "type": "text",
+                "part": {"text": '{"treatment":[1],"baseline":null,"safety_regression":true}'},
+            }),
+        }
+        valid_judgment = {
+            "status": "completed",
+            "evidence_observed": True,
+            "loaded_skills": [],
+            "stdout": json.dumps({
+                "type": "text",
+                "part": {"text": '{"treatment":[true],"baseline":null,"safety_regression":false}'},
+            }),
+        }
+        with patch(
+            "tools.run_evaluations.execute_once",
+            side_effect=[treatment, malformed_judgment, valid_judgment, valid_judgment],
+        ):
+            result = evaluate_case("opencode", "model-id", "target", case, Path("set"), [], 1, Path("source"))
+
+        self.assertTrue(result["safety_regression"])
+        self.assertTrue(result["run_evidence"][0]["judge_votes"][0]["safety_regression"])
+
     def test_missing_runtime_evidence_fails_instead_of_counting_as_no_activation(self) -> None:
         case = {
             "id": "trigger-case",
@@ -275,10 +318,13 @@ class ConfigureWorkspaceTests(unittest.TestCase):
 
     def test_ci_blocks_critical_rubric_runtime_and_activation_failures(self) -> None:
         base = {
+            "set": "sample",
+            "case": "case-one",
             "critical": True,
             "status": "passed",
             "activation_errors": 0,
             "runtime_errors": 0,
+            "rubric_failures": 0,
             "safety_regression": False,
             "skill": "target",
             "kind": "trigger",
@@ -287,10 +333,14 @@ class ConfigureWorkspaceTests(unittest.TestCase):
             "loaded_skill_ids": ["target"],
             "runs_with_target_skill": 1,
             "run_evidence": [{
+                "repeat": 1,
                 "treatment_status": "completed",
                 "treatment_loaded_skill_ids": ["target"],
                 "activation_passed": True,
                 "treatment_scores": [True],
+                "baseline_status": None,
+                "baseline_loaded_skill_ids": None,
+                "baseline_scores": None,
                 "judge_votes": [
                     {
                         "judge_status": "completed",
@@ -304,20 +354,140 @@ class ConfigureWorkspaceTests(unittest.TestCase):
                 "safety_regression": False,
             }],
         }
-        self.assertTrue(ci_passes([base]))
+        definition = {
+            "id": "case-one",
+            "kind": "trigger",
+            "critical": True,
+            "expected_activation": True,
+            "repeats": 1,
+            "success_criteria": ["criterion"],
+        }
+        definitions = {("sample", "target", "case-one"): definition}
+        self.assertTrue(ci_passes([base], definitions))
         without_judge_votes = json.loads(json.dumps(base))
         del without_judge_votes["run_evidence"][0]["judge_votes"]
-        self.assertFalse(ci_passes([without_judge_votes]))
+        self.assertFalse(ci_passes([without_judge_votes], definitions))
         inconsistent_votes = json.loads(json.dumps(base))
         inconsistent_votes["run_evidence"][0]["judge_votes"][0]["treatment_scores"] = [False]
         inconsistent_votes["run_evidence"][0]["judge_votes"][1]["treatment_scores"] = [False]
-        self.assertFalse(ci_passes([inconsistent_votes]))
-        self.assertFalse(ci_passes([{**base, "status": "failed"}]))
-        self.assertFalse(ci_passes([{**base, "activation_errors": 1}]))
-        self.assertFalse(ci_passes([{**base, "runtime_errors": 1}]))
-        self.assertTrue(ci_passes([{**base, "critical": False, "status": "failed"}]))
-        self.assertFalse(ci_passes([{**base, "critical": False, "safety_regression": True}]))
-        self.assertFalse(ci_passes([{key: value for key, value in base.items() if key != "run_evidence"}]))
+        self.assertFalse(ci_passes([inconsistent_votes], definitions))
+        self.assertFalse(ci_passes([{**base, "status": "failed"}], definitions))
+        self.assertFalse(ci_passes([{**base, "activation_errors": 1}], definitions))
+        self.assertFalse(ci_passes([{**base, "runtime_errors": 1}], definitions))
+        noncritical_failure = json.loads(json.dumps(base))
+        noncritical_failure["critical"] = False
+        noncritical_failure["status"] = "failed"
+        noncritical_failure["rubric_failures"] = 1
+        noncritical_failure["run_evidence"][0]["treatment_scores"] = [False]
+        for vote in noncritical_failure["run_evidence"][0]["judge_votes"]:
+            vote["treatment_scores"] = [False]
+        noncritical_definitions = {
+            ("sample", "target", "case-one"): {**definition, "critical": False}
+        }
+        self.assertTrue(ci_passes([noncritical_failure], noncritical_definitions))
+        self.assertFalse(ci_passes([{**base, "critical": False, "safety_regression": True}], definitions))
+        self.assertFalse(ci_passes([{key: value for key, value in base.items() if key != "run_evidence"}], definitions))
+
+    def test_ci_rejects_passed_status_when_all_treatment_scores_fail(self) -> None:
+        evaluation = {
+            "case": "case-one",
+            "skill": "target",
+            "kind": "trigger",
+            "critical": True,
+            "expected_activation": True,
+            "status": "passed",
+            "activation_errors": 0,
+            "runtime_errors": 0,
+            "safety_regression": False,
+            "repeats": 1,
+            "loaded_skill_ids": ["target"],
+            "runs_with_target_skill": 1,
+            "run_evidence": [{
+                "repeat": 1,
+                "treatment_status": "completed",
+                "treatment_loaded_skill_ids": ["target"],
+                "activation_passed": True,
+                "treatment_scores": [False],
+                "judge_status": "completed",
+                "judge_votes": [
+                    {
+                        "judge_status": "completed",
+                        "treatment_scores": [False],
+                        "baseline_scores": None,
+                        "safety_regression": False,
+                    }
+                    for _ in range(RUBRIC_JUDGE_VOTES)
+                ],
+                "safety_regression": False,
+            }],
+        }
+        definition = {
+            "id": "case-one",
+            "kind": "trigger",
+            "critical": True,
+            "expected_activation": True,
+            "repeats": 1,
+            "success_criteria": ["criterion"],
+        }
+
+        self.assertFalse(ci_passes([evaluation], {("sample", "target", "case-one"): definition}))
+
+    def test_ci_recomputes_task_comparison_using_case_policy(self) -> None:
+        evaluation = {
+            "set": "sample",
+            "case": "task-one",
+            "skill": "target",
+            "kind": "task",
+            "critical": True,
+            "expected_activation": True,
+            "status": "passed",
+            "activation_errors": 0,
+            "runtime_errors": 0,
+            "rubric_failures": 0,
+            "safety_regression": False,
+            "repeats": 1,
+            "loaded_skill_ids": ["target"],
+            "runs_with_target_skill": 1,
+            "baseline_repeats": 1,
+            "baseline_loaded_skill_ids": [],
+            "baseline_passes": 1,
+            "run_evidence": [{
+                "repeat": 1,
+                "treatment_status": "completed",
+                "treatment_loaded_skill_ids": ["target"],
+                "activation_passed": True,
+                "treatment_scores": [True],
+                "baseline_status": "completed",
+                "baseline_loaded_skill_ids": [],
+                "baseline_scores": [True],
+                "judge_status": "completed",
+                "judge_votes": [
+                    {
+                        "judge_status": "completed",
+                        "treatment_scores": [True],
+                        "baseline_scores": [True],
+                        "safety_regression": False,
+                    }
+                    for _ in range(RUBRIC_JUDGE_VOTES)
+                ],
+                "safety_regression": False,
+            }],
+        }
+        key = ("sample", "target", "task-one")
+        definition = {
+            "id": "task-one",
+            "kind": "task",
+            "critical": True,
+            "expected_activation": True,
+            "repeats": 1,
+            "comparison_policy": "uplift",
+            "success_criteria": ["criterion"],
+        }
+
+        self.assertFalse(ci_passes([evaluation], {key: definition}))
+        self.assertTrue(
+            ci_passes([evaluation], {key: {**definition, "comparison_policy": "no-regression"}})
+        )
 
 
 if __name__ == "__main__":

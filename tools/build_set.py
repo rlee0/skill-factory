@@ -13,10 +13,10 @@ from typing import Any
 
 try:
     from .check_repo import ROOT, read_json, validate_repo
-    from .evaluation_contract import RUBRIC_JUDGE_VOTES
+    from .evaluation_contract import AdjudicatedScores, RUBRIC_JUDGE_VOTES, assess_case
 except ImportError:  # Direct script execution.
     from check_repo import ROOT, read_json, validate_repo
-    from evaluation_contract import RUBRIC_JUDGE_VOTES
+    from evaluation_contract import AdjudicatedScores, RUBRIC_JUDGE_VOTES, assess_case
 
 
 def validate_human_adjudication(
@@ -205,12 +205,8 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
             if not isinstance(run_evidence, list) or len(run_evidence) != repeats:
                 errors.append(f"evaluation case {case_id!r} needs complete repeat-level evidence for {target!r}")
                 run_evidence = []
-            observed_loaded: set[str] = set()
-            observed_baseline: set[str] = set()
-            target_runs = 0
-            safety_observed = False
             seen_repeats: set[int] = set()
-            effective_scores_by_repeat: dict[int, list[bool]] = {}
+            adjudicated_scores_by_repeat: dict[int, AdjudicatedScores] = {}
             for run in run_evidence:
                 if not isinstance(run, dict):
                     errors.append(f"evaluation case {case_id!r} has malformed repeat-level evidence for {target!r}")
@@ -226,18 +222,9 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                 if not isinstance(treatment_ids, list) or not all(isinstance(item, str) for item in treatment_ids):
                     errors.append(f"evaluation case {case_id!r} must record repeat-level loaded skill IDs for {target!r}")
                     treatment_ids = []
-                observed_loaded.update(treatment_ids)
-                target_was_loaded = target_skill in treatment_ids
-                target_runs += int(target_was_loaded)
-                if case.get("status") == "passed" and (
-                    target_was_loaded != definition["expected_activation"]
-                ):
-                    errors.append(f"evaluation case {case_id!r} records a false activation for {target!r}")
                 activation_passed = run.get("activation_passed")
                 if not isinstance(activation_passed, bool):
                     errors.append(f"evaluation case {case_id!r} must record repeat-level activation evidence for {target!r}")
-                elif activation_passed is not (target_was_loaded == definition["expected_activation"]):
-                    errors.append(f"evaluation case {case_id!r} has inconsistent repeat-level activation evidence for {target!r}")
                 if run.get("judge_status") != "completed":
                     errors.append(f"evaluation case {case_id!r} has incomplete aggregate judge status for {target!r}")
                 treatment_scores = run.get("treatment_scores")
@@ -252,55 +239,6 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                         f"evaluation case {case_id!r} needs {RUBRIC_JUDGE_VOTES} rubric judge votes per repeat for {target!r}"
                     )
                     judge_votes = []
-                valid_votes: list[dict[str, Any]] = []
-                for vote in judge_votes:
-                    if not isinstance(vote, dict) or vote.get("judge_status") != "completed":
-                        errors.append(f"evaluation case {case_id!r} has incomplete rubric judge votes for {target!r}")
-                        continue
-                    vote_treatment = vote.get("treatment_scores")
-                    vote_baseline = vote.get("baseline_scores")
-                    vote_safety = vote.get("safety_regression")
-                    if (not isinstance(vote_treatment, list) or len(vote_treatment) != criteria_count
-                            or not all(type(item) is bool for item in vote_treatment)):
-                        errors.append(f"evaluation case {case_id!r} has invalid treatment rubric votes for {target!r}")
-                        continue
-                    if definition["kind"] == "task":
-                        if (not isinstance(vote_baseline, list) or len(vote_baseline) != criteria_count
-                                or not all(type(item) is bool for item in vote_baseline)):
-                            errors.append(f"task case {case_id!r} has invalid baseline rubric votes for {target!r}")
-                            continue
-                    elif vote_baseline is not None:
-                        errors.append(f"trigger case {case_id!r} has unexpected baseline rubric votes for {target!r}")
-                        continue
-                    if type(vote_safety) is not bool:
-                        errors.append(f"evaluation case {case_id!r} has invalid safety judge votes for {target!r}")
-                        continue
-                    valid_votes.append(vote)
-                if len(valid_votes) == RUBRIC_JUDGE_VOTES:
-                    majority = RUBRIC_JUDGE_VOTES // 2 + 1
-                    expected_treatment = [
-                        sum(vote["treatment_scores"][index] for vote in valid_votes) >= majority
-                        for index in range(criteria_count)
-                    ]
-                    if treatment_scores != expected_treatment:
-                        errors.append(f"evaluation case {case_id!r} treatment scores do not match judge majority for {target!r}")
-                    expected_safety = any(vote["safety_regression"] for vote in valid_votes)
-                    if run.get("safety_regression") is not expected_safety:
-                        errors.append(f"evaluation case {case_id!r} safety result does not conservatively aggregate judge votes for {target!r}")
-                    if definition["kind"] == "task" and all(
-                        isinstance(vote.get("baseline_scores"), list)
-                        and len(vote["baseline_scores"]) == criteria_count
-                        and all(type(item) is bool for item in vote["baseline_scores"])
-                        for vote in valid_votes
-                    ):
-                        expected_baseline = [
-                            sum(vote["baseline_scores"][index] for vote in valid_votes) >= majority
-                            for index in range(criteria_count)
-                        ]
-                        if baseline_scores != expected_baseline:
-                            errors.append(f"task case {case_id!r} baseline scores do not match judge majority for {target!r}")
-                effective_treatment_scores = treatment_scores
-                effective_baseline_scores = baseline_scores
                 if "human_adjudication" in run:
                     (
                         effective_treatment_scores,
@@ -316,56 +254,33 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                         target,
                     )
                     errors.extend(adjudication_errors)
-                effective_scores_by_repeat[repeat_number] = effective_treatment_scores
-                baseline_status = run.get("baseline_status")
+                    if not adjudication_errors:
+                        adjudicated_scores_by_repeat[repeat_number] = AdjudicatedScores(
+                            effective_treatment_scores,
+                            effective_baseline_scores,
+                        )
                 baseline_ids = run.get("baseline_loaded_skill_ids")
                 baseline_scores = run.get("baseline_scores")
                 if definition["kind"] == "task":
-                    if baseline_status != "completed":
-                        errors.append(f"task case {case_id!r} has missing baseline evidence for {target!r}")
                     if not isinstance(baseline_ids, list) or not all(isinstance(item, str) for item in baseline_ids):
                         errors.append(f"task case {case_id!r} must record repeat-level baseline skill IDs for {target!r}")
                         baseline_ids = []
-                    observed_baseline.update(baseline_ids)
                     if not isinstance(baseline_scores, list) or len(baseline_scores) != criteria_count or not all(type(item) is bool for item in baseline_scores):
                         errors.append(f"task case {case_id!r} must record every baseline criterion score for {target!r}")
                         baseline_scores = []
-                    elif case.get("status") == "passed":
-                        policy = definition["comparison_policy"]
-                        treatment_score = sum(effective_treatment_scores)
-                        baseline_score = sum(effective_baseline_scores or [])
-                        if (not all(effective_treatment_scores)
-                                or (policy == "uplift" and treatment_score <= baseline_score)
-                                or (policy == "no-regression" and treatment_score < baseline_score)):
-                            errors.append(f"task case {case_id!r} does not satisfy its rubric comparison for {target!r}")
-                elif baseline_status is not None or baseline_ids is not None or baseline_scores is not None:
-                    errors.append(f"trigger case {case_id!r} must not claim baseline results for {target!r}")
                 safety_regression = run.get("safety_regression")
                 if not isinstance(safety_regression, bool):
                     errors.append(f"evaluation case {case_id!r} must record repeat-level safety evidence for {target!r}")
-                elif safety_regression:
-                    safety_observed = True
-                    errors.append(f"evaluation case {case_id!r} records a safety regression for {target!r}")
-            if sorted(observed_loaded) != sorted(loaded_skills):
-                errors.append(f"evaluation case {case_id!r} loaded skill summary does not match repeat evidence for {target!r}")
-            if runs_with_target != target_runs:
-                errors.append(f"evaluation case {case_id!r} target-skill count does not match repeat evidence for {target!r}")
-            if case.get("status") == "passed":
-                for run in run_evidence:
-                    if not isinstance(run, dict):
-                        continue
-                    effective_scores = effective_scores_by_repeat.get(
-                        run.get("repeat"), run.get("treatment_scores")
-                    )
-                    if (run.get("activation_passed") is not True
-                            or not isinstance(effective_scores, list) or not all(effective_scores)):
-                        errors.append(f"evaluation case {case_id!r} has a failed repeat in a passing result for {target!r}")
-                        break
+            _, assessment_errors = assess_case(
+                {**definition, "skill": target_skill},
+                case,
+                adjudicated_scores_by_repeat=adjudicated_scores_by_repeat,
+                require_recorded=False,
+            )
+            errors.extend(assessment_errors)
             safety_regression = case.get("safety_regression")
             if not isinstance(safety_regression, bool):
                 errors.append(f"evaluation case {case_id!r} must record safety_regression for {target!r}")
-            elif safety_regression or safety_observed:
-                errors.append(f"evaluation case {case_id!r} records a safety regression for {target!r}")
             if case.get("status") == "failed" and not definition["critical"]:
                 rationale = case.get("rationale")
                 if not isinstance(rationale, str) or not rationale.strip():
@@ -379,8 +294,6 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                 baseline_loaded_skills = case.get("baseline_loaded_skill_ids")
                 if not isinstance(baseline_loaded_skills, list) or not all(isinstance(item, str) for item in baseline_loaded_skills):
                     errors.append(f"task case {case_id!r} must list baseline-loaded skill IDs for {target!r}")
-                elif sorted(observed_baseline) != sorted(baseline_loaded_skills):
-                    errors.append(f"task case {case_id!r} baseline skill summary does not match repeat evidence for {target!r}")
             if definition["critical"] and case.get("status") != "passed":
                 errors.append(f"critical evaluation case failed for {target!r}: {case_id}")
     return errors

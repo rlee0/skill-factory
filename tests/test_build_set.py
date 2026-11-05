@@ -105,6 +105,56 @@ class ValidateReportTests(unittest.TestCase):
         errors = self.validate(report)
         self.assertTrue(any("critical evaluation case failed" in error for error in errors))
 
+    def test_noncritical_failure_needs_a_failing_repeat_not_only_rationale(self) -> None:
+        report = report_document()
+        noncritical = next(
+            case for case in report["runtimes"][0]["cases"]
+            if not case["critical"]
+        )
+        noncritical["status"] = "failed"
+        noncritical["rationale"] = "The case was marked failed during review."
+
+        errors = self.validate(report)
+
+        self.assertTrue(any("failed case has no failing repeat" in error for error in errors))
+
+    def test_reasoned_noncritical_rubric_failure_can_remain_in_a_passing_report(self) -> None:
+        report = report_document()
+        noncritical = next(
+            case for case in report["runtimes"][0]["cases"]
+            if not case["critical"]
+        )
+        noncritical["status"] = "failed"
+        noncritical["rationale"] = "A noncritical rubric criterion was missed."
+        run = noncritical["run_evidence"][0]
+        failed_scores = [False] * len(run["treatment_scores"])
+        run["treatment_scores"] = failed_scores
+        run["judge_votes"] = [
+            {**vote, "treatment_scores": failed_scores}
+            for vote in run["judge_votes"]
+        ]
+
+        self.assertEqual([], self.validate(report))
+
+    def test_reasoned_noncritical_activation_failure_can_remain_in_a_passing_report(self) -> None:
+        report = report_document()
+        noncritical = next(
+            case for case in report["runtimes"][0]["cases"]
+            if not case["critical"] and case["expected_activation"] is False
+        )
+        noncritical["status"] = "failed"
+        noncritical["rationale"] = "The unrelated prompt activated the target skill."
+        target_skill = next(
+            skill for skill, definition in evaluation_cases()
+            if definition["id"] == noncritical["id"]
+        )
+        noncritical["runs_with_target_skill"] = 1
+        noncritical["loaded_skill_ids"] = [target_skill]
+        noncritical["run_evidence"][0]["treatment_loaded_skill_ids"] = [target_skill]
+        noncritical["run_evidence"][0]["activation_passed"] = False
+
+        self.assertEqual([], self.validate(report))
+
     def test_missing_case_blocks_report(self) -> None:
         report = report_document()
         report["runtimes"][0]["cases"].pop()

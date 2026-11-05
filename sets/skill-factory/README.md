@@ -20,8 +20,8 @@
 | [`runtime-adaptation`](skills/runtime-adaptation/SKILL.md) | Conditionally documenting named runtime differences and assessing runtime support evidence. |
 | [`review-safety`](skills/review-safety/SKILL.md) | Reviewing skill and set risks before distribution, including required expert sign-off and release gates. |
 
-**Version:** `0.3.0` (pre-release; evaluation pending)
+**Version:** `0.3.0` (pre-release; behavioral evaluation passed for OpenCode)
 
 **License:** Apache-2.0
 
-**Target runtime:** OpenCode. No runtime is currently listed as tested for `0.3.0`; its evaluation status is pending. The `0.1.0` report is a historical record for an earlier, incomplete fixture set and is not evidence for this version. See the repository [evaluation protocol](../../docs/evaluation.md).
+**Runtime status:** OpenCode is the target and tested runtime for `0.3.0`; see the [versioned evaluation report](reports/0.3.0.json). The set is not yet released and awaits maintainer review of the exact report and archive; see the [safety review](../../docs/reviews/skill-factory-0.3.0-safety-review.md). The `0.1.0` report is a historical record for an earlier, incomplete fixture set and is not evidence for this version. See the repository [evaluation protocol](../../docs/evaluation.md).
