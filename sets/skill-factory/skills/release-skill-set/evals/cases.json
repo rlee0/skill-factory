@@ -37,7 +37,8 @@
       "repeats": 2,
       "success_criteria": [
         "The agent blocks release despite the high aggregate score.",
-        "The response names `overdue-items-critical` and OpenCode v2.2.5, requires diagnosing and correcting the failure, and then rerunning complete evidence for the exact candidate.",
+        "The response names `overdue-items-critical` and OpenCode v2.2.5 as the failed release gate.",
+        "The response requires diagnosing and correcting the failure, then rerunning complete evidence for the exact candidate before release.",
         "The agent does not create or publish a remote release."
       ]
     },

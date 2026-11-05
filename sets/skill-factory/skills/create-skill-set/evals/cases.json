@@ -72,7 +72,7 @@
         "Maintenance is marked not started or not applicable because no release exists.",
         "The response does not treat structural checks or safety review as behavioral evidence, invent runtime results, or claim an archive, tag, or release was created.",
         "The next handoff is evaluation.",
-        "Release remains gated until complete reviewed evidence and archive inspection exist.",
+        "The response does not recommend release now; it requires completing behavioral evaluation before release review and archive inspection.",
         "Maintenance remains deferred because no release exists."
       ]
     }
