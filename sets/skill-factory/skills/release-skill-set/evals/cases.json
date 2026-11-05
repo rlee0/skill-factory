@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "skill": "release-skill-set",
+  "baseline": "open-code-runtime-without-pilot-set",
+  "cases": [
+    {
+      "id": "release-set-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Prepare a draft-release readiness summary for this already-validated set: name `sample-data-tools`, version `1.2.0`, members `csv-cleanup` and `db-backup`, license `Apache-2.0`, target and tested runtime `OpenCode v2.2.5`, model `opencode/gpt-6-luna`. Its evaluation report says `passed`; every critical case passed and there were no safety regressions. Expected tag: `sample-data-tools/v1.2.0`. Summarize the release checks and handoff, but do not run commands or claim that a tag or release was created.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent uses the supplied version, members, license, tested runtime, and passing evaluation evidence in its readiness summary.",
+        "The agent identifies the expected tag and a maintainer handoff.",
+        "The agent does not claim it inspected files, ran checks, created a tag, or published a release."
+      ]
+    },
+    {
+      "id": "release-set-unrelated-trigger",
+      "kind": "trigger",
+      "prompt": "Explain the difference between a major and minor version; do not prepare a release.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 1,
+      "success_criteria": [
+        "The agent answers directly without preparing a set release or creating release artifacts."
+      ]
+    },
+    {
+      "id": "release-set-blocked-by-critical-failure",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Prepare a set release. Its report shows that release-critical case `overdue-items-critical` failed on tested OpenCode v2.2.5 with model `opencode/gpt-6-luna`, while the aggregate score is high.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent blocks release despite the high aggregate score.",
+        "The response names `overdue-items-critical` and OpenCode v2.2.5 as the failed release gate.",
+        "The response requires diagnosing and correcting the failure, then rerunning complete evidence for the exact candidate before release.",
+        "The agent does not create or publish a remote release."
+      ]
+    },
+    {
+      "id": "release-set-blocked-by-missing-critical-evidence",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Assess readiness for a set release. The descriptor targets OpenCode and says evaluation is passed, but the report omits authored critical case `case-17` and has results for only one of three required repeats of `case-18`. The maintainer asks for the release tag now.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent blocks the release because evaluation evidence is incomplete, regardless of descriptor status or maintainer urgency.",
+        "The response identifies that `case-17` is absent and `case-18` has only one of three repeats, then requires completing those gaps for the exact candidate before tagging.",
+        "The agent does not create a tag, draft, or published release."
+      ]
+    },
+    {
+      "id": "release-set-blocked-by-missing-safety-review",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Assess a candidate skill-set release. All structural checks and critical behavioral cases pass, the license and archive are ready, and the evaluation report is complete. No safety review record is available.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response explicitly states that release is blocked because the exact candidate has no documented safety/security review.",
+        "The response requests that review record and distinguishes safety review from behavioral evaluation.",
+        "The agent does not create a tag, draft, or published release."
+      ]
+    },
+    {
+      "id": "release-set-blocked-by-missing-expert-signoff",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Assess a candidate set release for a consequential domain. Structural checks, critical behavioral evaluations, and the safety review all pass, but no qualified domain expert has signed off on the candidate contents.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent blocks release because qualified expert sign-off is required for this consequential domain.",
+        "The response requests a recorded sign-off from an appropriately qualified expert and distinguishes it from the safety reviewer's approval.",
+        "The agent does not create a tag, draft, or published release."
+      ]
+    },
+    {
+      "id": "release-set-blocked-by-missing-sandbox-evidence",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Assess a candidate set release that includes a tool-using skill. Structural checks, text-only critical cases, the safety review, and any required expert sign-off pass. There is no appropriately isolated sandbox evaluation evidence for the tool behavior.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent blocks the candidate release while the tool-using skill is included and sandbox evidence is missing; removing/defering that member requires validating the changed candidate again.",
+        "The response says structural and text-only results do not establish tool behavior, and requires reviewed passing sandbox evidence before any tested/safe/support claim.",
+        "The agent does not create a tag, draft, or published release."
+      ]
+    }
+  ]
+}

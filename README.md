@@ -1,6 +1,6 @@
 # Skill Factory
 
-A public, reusable workshop for developing, evaluating, and shipping curated sets of portable agent skills. The repository also maintains the `skill-factory` set as its first-party pilot.
+A public, reusable workshop for developing, evaluating, safety-reviewing, and shipping curated sets of portable agent skills. The repository also maintains the `skill-factory` set as its first-party pilot.
 
 ## Repository model
 
@@ -13,13 +13,23 @@ See [`GLOSSARY.md`](GLOSSARY.md), [set conventions](docs/skill-sets.md), [evalua
 
 ## First-party pilot
 
-[`sets/skill-factory/`](sets/skill-factory/) contains three focused skills:
+[`sets/skill-factory/`](sets/skill-factory/) contains thirteen focused skills:
 
-- `author-skills` — design and write a portable skill.
+- `author-skills` — author or revise a portable skill from an approved design, independently of the coordinator.
+- `create-skill-set` — coordinate the factory workflow, approval gates, and phase handoffs.
+- `design-skill-set` — define tailored set membership, responsibilities, handoffs, and runtime assumptions.
+- `discover-domain` — elicit and review domain context.
+- `domain-modeling` — clarify shared domain language and record consequential decisions.
 - `evaluate-skills` — define and assess activation and task outcomes.
-- `release-skill-sets` — prepare a versioned set release.
+- `integrate-tools-safely` — design authorized tool/script integrations with least privilege and sandboxed evaluation gates.
+- `map-skill-opportunities` — derive and prioritize bounded skill candidates.
+- `maintain-skill-set` — assess post-release changes, evidence, versioning, deprecation, and retirement.
+- `research-domain` — deepen a domain brief with focused, trustworthy sources.
+- `release-skill-set` — prepare a versioned set release.
+- `runtime-adaptation` — conditionally document named runtime differences and assess runtime support evidence.
+- `review-safety` — review safety and security risks, require expert sign-off for consequential use, and enforce release gates.
 
-The pilot supports OpenCode only. Its restricted local runner supports manual review; protected pull-request CI evaluates changed skills with OpenCode and a tool-disabled rubric judge. Raw CI traces are ephemeral, and only sanitized results are retained. See the [evaluation protocol](docs/evaluation.md) and run `bash scripts/setup-skill-evaluations.sh` to configure the protected API-key secret.
+The pilot currently targets OpenCode, but the current `0.3.0` set is pending behavioral evaluation and has no tested runtimes. The checked-in `0.1.0` report is historical and does not cover the current complete fixture set. Evaluation infrastructure and repository checks do not establish tested-runtime support or replace the release gates. See the [evaluation protocol](docs/evaluation.md); do not make a tested-runtime claim until complete evidence for the current version is reviewed.
 
 The pilot skills are linked into `.agents/skills/` for local OpenCode discovery. Set sources remain canonical under `sets/skill-factory/`.
 

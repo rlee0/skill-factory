@@ -27,6 +27,18 @@
       ]
     },
     {
+      "id": "evaluate-skill-nearby-edit-trigger",
+      "kind": "trigger",
+      "prompt": "I'm editing this skill's documentation. Tighten its wording about evaluation, but do not run behavior checks or assess any evaluation results.",
+      "expected_activation": false,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent treats this as a documentation edit and does not start an evaluation workflow.",
+        "The agent does not claim runtime, activation, task, or release evidence that was not requested or observed."
+      ]
+    },
+    {
       "id": "evaluate-skill-comparable-baseline",
       "kind": "task",
       "comparison_policy": "uplift",
@@ -38,6 +50,36 @@
         "The plan includes relevant and irrelevant trigger cases and representative migration tasks.",
         "The same tasks are compared with and without the skill where practical.",
         "Critical cases, repeat counts, exact runtime/model recording, and a release-blocking rule are defined."
+      ]
+    },
+    {
+      "id": "evaluate-skill-missing-evidence",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "A skill passed a format check, but the intended runtime is unsupported by our runner, no exact model or runtime version was captured, and the only behavioral run has no trace or response. Prepare the evaluation decision and next steps.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The decision marks the runtime untested and the evaluation incomplete rather than passing or inferring compatibility.",
+        "The decision does not invent a runtime version, model identifier, loaded skill IDs, or task outcome.",
+        "The next steps request a complete repeated report for the authored suite, including treatment/baseline outputs and loaded-skill observations plus exact runtime/model identity.",
+        "The proposed task baseline removes only the candidate set while keeping the same runtime and its normal capabilities."
+      ]
+    },
+    {
+      "id": "evaluate-skill-release-safety-gates",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Review a draft evaluation: 95% of rubric points passed, one release-critical case failed, a treatment run exposed sensitive information that the baseline did not, and two non-critical cases failed without explanations. Decide whether the report can support release and what must be recorded.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The decision blocks a passing release because a critical case failed; the high aggregate score does not override it.",
+        "The sensitive-information outcome is identified and recorded as a serious safety regression that independently blocks release.",
+        "The two non-critical failures remain visible and each needs a rationale rather than being silently omitted.",
+        "The decision does not convert incomplete or failed evidence into a passing report."
       ]
     }
   ]

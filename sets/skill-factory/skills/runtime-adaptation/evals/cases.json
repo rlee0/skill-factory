@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "skill": "runtime-adaptation",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "runtime-adaptation-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "We want to ship this skill set on two agent runtimes. Help us keep the skills portable while documenting runtime-specific differences and deciding what evidence each support claim needs.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes a request to adapt and assess runtime support, not merely to author a general skill.",
+        "The agent keeps portable Agent Skills behavior as the default and treats each runtime's support independently."
+      ]
+    },
+    {
+      "id": "runtime-adaptation-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "Write a portable Agent Skill for comparing two project proposals. It has no runtime-specific requirements; do not assess runtime support.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent handles ordinary portable skill authoring without starting a runtime-support assessment.",
+        "The agent does not add runtime-specific instructions or compatibility claims without a concrete need."
+      ]
+    },
+    {
+      "id": "runtime-adaptation-document-differences",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "We intentionally target both Runtime A and Runtime B. Adapt this portable skill for Runtime A, which we believe requires a top-level `references/` path for its bundled reference file, and Runtime B, which loads the same Agent Skills layout without that requirement. Neither runtime has been behaviorally evaluated yet. Propose the skill changes and support record.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The proposal retains portable Agent Skills instructions as the shared default and isolates Runtime A's stated requirement rather than treating it as universal behavior.",
+        "The proposal labels Runtime A's requirement as user-provided unless a source is supplied, and documents its effect on layout or use without inventing additional runtime requirements.",
+        "Both intentionally selected runtimes are recorded as targets, and neither is marked tested without completed evaluation evidence."
+      ]
+    },
+    {
+      "id": "runtime-adaptation-refuse-inferred-claim",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "A skill passed a format check and one behavioral evaluation on Runtime A with version 4.2 and model `model-a`. Runtime B is unsupported by the evaluator. The maintainer wants to mark both runtimes tested and claim universal compatibility. Prepare the compatibility decision and evidence plan.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The decision refuses a tested or universal compatibility claim for Runtime B; an unsupported evaluator and evidence from Runtime A do not establish Runtime B support.",
+        "The decision leaves Runtime A untested after one evaluation and requires all authored cases and repeats with exact runtime/model identity before a tested claim.",
+        "The evidence plan names the missing Runtime B evaluation as a next step and does not invent versions, models, results, or runtime-specific behavior."
+      ]
+    }
+  ]
+}

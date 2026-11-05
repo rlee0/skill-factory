@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "skill": "create-skill-set",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "create-skill-set-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "I am a domain expert and want to build a small, useful set of agent skills for my team's work. I have not decided what the skills should be, and I have no reviewed domain brief, opportunity map, or architecture yet. Can you guide me from here without jumping ahead?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes a factory-coordination request, identifies the missing brief/map/architecture, and names domain discovery as the next phase.",
+        "The response does not infer approval or begin architecture, authoring, or packaging before the required earlier artifacts are reviewed."
+      ]
+    },
+    {
+      "id": "create-skill-set-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "I already have an approved skill architecture. Please write a concise SKILL.md for one member and make its instructions portable. This is a single-phase authoring request; do not coordinate the rest of the factory workflow.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes this as an independent skill-authoring request, not a request to coordinate the full factory workflow.",
+        "The agent does not take over authoring or force the user through unrelated coordinator phases."
+      ]
+    },
+    {
+      "id": "create-skill-set-intake-and-scope-gate",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "I coordinate a neighborhood tool library. Members request equipment, volunteers check items in and out, inspect returns, and keep a reservation calendar. We use a shared spreadsheet and have one volunteer on weekends. We cannot charge fees or suspend memberships. I want an agent skill set that helps with recurring work, but I have no reviewed domain brief, opportunity map, or architecture yet. Guide me through creating it; do not write or package skills until I have approved the relevant plans.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response reuses the supplied workflows and constraints and keeps domain discovery as the current phase; it may hand off to `discover-domain` or ask focused questions needed by that phase, without inventing a reviewed brief.",
+        "The response asks only focused questions needed for a reviewable domain brief and does not perform architecture, authoring, or packaging prematurely.",
+        "The response preserves the limits on fees and membership suspension, keeps private details out of reusable content, and does not claim evaluation, safety sign-off, or runtime support has passed."
+      ]
+    },
+    {
+      "id": "create-skill-set-architecture-handoff",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "We have an approved domain brief and approved opportunity map for a neighborhood food pantry. The map proposes (1) a volunteer check-in and visit-record workflow aid and (2) a way to communicate confirmed grocery availability with uncertain cases handed to pantry staff. We have not designed membership or approved an architecture. I want to continue the factory workflow. What should happen next, and what must remain gated?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response recognizes approved inputs and hands off architecture design to `design-skill-set` rather than restarting discovery or remapping opportunities.",
+        "The response leaves architecture unapproved, requires the user's explicit review and approval before authoring starts, and does not treat approval of the brief/map as architecture or release approval."
+      ]
+    },
+    {
+      "id": "create-skill-set-complete-journey-through-release-gate",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "I coordinate a neighborhood tool library that lends equipment through a shared reservation calendar and asks volunteers to inspect returns. For a draft set called `tool-library-workflow` version `0.1.0`, our domain brief and opportunity map were reviewed and explicitly approved, then `design-skill-set` produced an architecture that we explicitly approved. `author-skills` has delivered the two approved text-only skills. `evaluate-skills` prepared their cases, but no behavioral run was possible because the evaluation runtime credentials are unavailable; there are no runtime results or report for this candidate. The repository's structural checks passed. `review-safety` reviewed these exact candidate files, found no release-blocking issue, and recorded that the work is not consequential and does not need expert sign-off. We decided against tool integrations. No consumer archive has been built or inspected, and no release has been created. Please give me the coordinator's final workflow handoff for this run, including the phase record and what we should do next.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response treats the domain brief, opportunity map, and architecture as explicitly approved, records that authoring occurred only after architecture approval, and does not restart completed phases or infer additional approvals.",
+        "The response distinguishes supplied completed work from coordinator work, and does not claim an unperformed phase or approval.",
+        "The phase record marks the supplied structural checks as complete.",
+        "The phase record marks the supplied safety review as complete for the exact candidate.",
+        "Behavioral evaluation is marked blocked or pending because no run or report exists.",
+        "Release is marked not started or blocked because evaluation evidence and archive inspection are missing.",
+        "Maintenance is marked not started or not applicable because no release exists.",
+        "The response does not treat structural checks or safety review as behavioral evidence, invent runtime results, or claim an archive, tag, or release was created.",
+        "The next handoff is evaluation.",
+        "The response does not recommend release now; it requires completing behavioral evaluation before release review and archive inspection.",
+        "Maintenance remains deferred because no release exists."
+      ]
+    }
+  ]
+}

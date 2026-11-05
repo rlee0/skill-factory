@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "skill": "map-skill-opportunities",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "map-skill-opportunities-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "We have an approved domain brief, but its contents are not included in this conversation. I want a focused, prioritized map of bounded agent-skill opportunities. What do you need before mapping?",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes this as opportunity mapping from an approved brief, rather than initial discovery, architecture, or authoring.",
+        "Because the brief contents are absent, the agent requests the reviewed brief instead of inventing candidate skills or priorities."
+      ]
+    },
+    {
+      "id": "map-skill-opportunities-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "I am new to agent skills and only know that I work in a community clinic. Help me explain the users, recurring work, outcomes, constraints, and unknowns before we decide what to build.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes that domain discovery is needed before opportunity mapping.",
+        "The agent does not invent an approved brief or propose a premature skill inventory."
+      ]
+    },
+    {
+      "id": "map-skill-opportunities-prioritized-pantry-map",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Our approved brief: a neighborhood food pantry serves walk-in neighbors. Volunteers check people in, confirm household size, record visits, and help people choose from available groceries. The goals are shorter waits and respectful service. Constraints include a paper sign-in fallback, limited bilingual coverage, and a small storage room. Some neighbors arrive without usual documents. Volunteers must not make eligibility decisions or promise stock that has not been confirmed. Suggest the skill opportunities we should consider next.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response derives candidates from actionable recurring tasks or handoffs in the brief rather than listing broad pantry topics.",
+        "Each recommended candidate identifies its user-facing trigger, responsibility, non-goals or nearby non-triggers, and observable user outcome.",
+        "The response prioritizes candidates with concise rationale across user value, feasibility, risk, and available evidence, preserving stated limits on eligibility and stock claims.",
+        "The response flags material unknowns or evidence gaps as unresolved and asks for review or approval of the proposed opportunities before skill authoring."
+      ]
+    },
+    {
+      "id": "map-skill-opportunities-resolve-overlap",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Approved brief for a small volunteer-run tool library: members request equipment, staff check items in and out, inspect returns, and maintain a reservation calendar. One proposal is 'help with all tool-library work'; another is 'answer member questions,' including questions about overdue items and reservations; a third is 'track overdue items.' We have one staff member on weekends, a shared spreadsheet, and no authority to charge fees or suspend memberships. Please assess these proposals and recommend a focused opportunity map.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response identifies the overly broad proposal and narrows it into distinct, actionable workflow opportunities with clear ownership boundaries.",
+        "The response detects that broad member-question handling overlaps overdue-item questions and proposes a focused boundary or handoff rather than duplicating the overdue workflow.",
+        "The response does not claim member questions can be answered reliably without approved policy sources, and identifies missing spreadsheet access or workflow rules as unresolved feasibility gaps.",
+        "Candidate triggers, nearby non-triggers, responsibilities, non-goals, expected outcomes, and prioritization rationale are specific to this brief; the response does not assign fee or suspension decisions to a skill.",
+        "The response leaves unsupported assumptions visible and asks the user to review the focused map before moving to architecture or authoring."
+      ]
+    }
+  ]
+}

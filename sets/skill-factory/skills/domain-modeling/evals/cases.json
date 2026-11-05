@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "skill": "domain-modeling",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "domain-modeling-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Our approved domain brief uses 'member', 'participant', and 'household' inconsistently. Help us settle shared definitions, check how the concepts relate, and record any important decision without mixing them up with software implementation terms.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes a need to clarify and maintain domain concepts, rather than restarting discovery or proposing skill opportunities.",
+        "The agent treats canonical definitions and decisions as reviewable choices, not facts it may impose without user input."
+      ]
+    },
+    {
+      "id": "domain-modeling-irrelevant-request",
+      "kind": "trigger",
+      "prompt": "I am just starting to explore whether an agent skill could help at our community clinic. Help me identify the people, recurring work, outcomes, constraints, and unknowns for an initial domain brief.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recognizes that this is initial domain discovery, not durable terminology or decision modeling.",
+        "The agent does not force a glossary, domain model, or decision record when none is needed."
+      ]
+    },
+    {
+      "id": "domain-modeling-clarify-terminology",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "Our approved brief for a neighborhood tool library says 'member' for a person with an account, 'borrower' for whoever checks out an item, and 'household' for people sharing one membership. In practice, staff sometimes use 'borrower' for any visitor. Help us clarify the terms for a shared glossary. Keep the definitions grounded in what I supplied, note what needs staff confirmation, and keep software labels like account_id separate.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response proposes concise, distinct definitions that preserve the supplied distinction between member, borrower, and household without silently resolving the conflicting local usage.",
+        "The response separates domain concepts from implementation details such as account_id and identifies staff confirmation as needed before adopting canonical terms.",
+        "The response captures scope, known ambiguity, and provenance or unresolved status in a reusable glossary shape without inventing domain facts."
+      ]
+    },
+    {
+      "id": "domain-modeling-boundary-scenarios-and-decision",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "For our approved tool-library brief, we have tentatively agreed that a 'reservation' holds an item for a member, while a 'checkout' starts when staff hand over an available item. A member who picks up a reservation has both records; a walk-in checkout has only a checkout. Staff disagree about whether a canceled reservation should count as a visit. Stress-test these boundaries with concrete scenarios and edge cases. Also advise whether the canceled-reservation question belongs in a durable decision record; no one has decided it yet.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The response checks the proposed reservation and checkout relationship against the supplied pickup and walk-in scenarios, then identifies a meaningful boundary question or edge case without inventing a rule.",
+        "The response says no durable decision should be recorded while the meaning of 'visit' is unresolved and no decision has been made; it leaves the question open for the responsible owners.",
+        "The response leaves staff or domain owners as the decision-makers and does not present the proposed definitions as settled or authoritative."
+      ]
+    }
+  ]
+}

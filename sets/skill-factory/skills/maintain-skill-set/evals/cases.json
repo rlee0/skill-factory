@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "skill": "maintain-skill-set",
+  "baseline": "open-code-runtime-without-skill-factory-set",
+  "cases": [
+    {
+      "id": "maintain-skill-set-relevant-trigger",
+      "kind": "trigger",
+      "prompt": "Our released skill set has changed since its last version. Help me assess the impact, decide what evidence and version updates are needed, and plan any deprecation or removal.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 3,
+      "success_criteria": [
+        "The agent recognizes post-release maintenance of an existing skill set and scopes change impact, evaluation, version, and lifecycle decisions.",
+        "The agent asks for or identifies the exact released and proposed sources instead of assuming their contents."
+      ]
+    },
+    {
+      "id": "maintain-skill-set-nearby-irrelevant-trigger",
+      "kind": "trigger",
+      "prompt": "Explain SemVer's patch, minor, and major numbers for a software library; do not assess or maintain an agent skill set.",
+      "expected_activation": false,
+      "critical": false,
+      "repeats": 2,
+      "success_criteria": [
+        "The maintenance skill is not loaded for a generic software SemVer question unrelated to an agent skill set.",
+        "The agent answers directly without starting a skill-set lifecycle review."
+      ]
+    },
+    {
+      "id": "maintain-skill-set-map-change-impact",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "A released skill set has three changes proposed: a typo fix in `invoice-csv`, a new mandatory confirmation step in `payment-runner`, and a changed source API version used by `account-sync`. The set also has evaluation fixtures, a safety review, and an OpenCode tested-runtime claim. Prepare an impact assessment and next actions. No test runs have happened yet.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The assessment distinguishes the typo-only correction from behavior-changing edits and maps each change to relevant skills, fixtures, safety/source review, and runtime claims.",
+        "The agent identifies affected cases and claims for re-evaluation or review, and keeps unaffected evidence only where its scope remains valid.",
+        "The agent does not claim any evaluation, safety review, or runtime evidence was completed."
+      ]
+    },
+    {
+      "id": "maintain-skill-set-independent-semver",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "An already-released skill set is at version `2.4.1`. We are only planning maintenance for proposed changes: add a compatible `meeting-notes` skill and correct a wording error in `agenda-builder`; existing behavior and membership remain compatible. Another set in the repository is unchanged. No release candidate is prepared, and I am not asking for release-readiness review or packaging. Recommend the version and maintenance updates for the changed set.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The agent recommends a minor version increase for the added capability and does not let the wording correction override that classification.",
+        "The version update applies only to the changed set, with its descriptor and human overview kept consistent.",
+        "The agent preserves historical reports and does not create a passing report or alter tested-runtime claims without complete evidence for the new exact version."
+      ]
+    },
+    {
+      "id": "maintain-skill-set-re-evaluate-runtime-evidence",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "A skill in a released set changes its decision workflow. The set's only tested runtime is OpenCode, with prior evidence on version 2.3 and model `model-old`; Runtime B is a target but has never been evaluated. Decide what must be evaluated and what can be claimed while results are pending.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The plan explicitly re-evaluates the changed behavior and affected cases on the previously claimed OpenCode 2.3 / `model-old` configuration, rather than reusing old-snapshot results.",
+        "Task comparisons use the same runtime without the candidate set while retaining that runtime's native capabilities.",
+        "The agent treats runtime/model evidence independently, does not transfer old results or OpenCode results to Runtime B, and keeps claims pending or untested until complete results are reviewed.",
+        "The agent does not invent results, runtime versions, models, or passing evidence."
+      ]
+    },
+    {
+      "id": "maintain-skill-set-deprecate-and-retire",
+      "kind": "task",
+      "comparison_policy": "no-regression",
+      "prompt": "The `legacy-export` skill is still used by a small number of consumers, but a replacement `report-export` skill is available. The old skill has a known security limitation. The owner asks you to remove it from the published set immediately and says no migration notice is needed. Draft a responsible lifecycle plan.",
+      "expected_activation": true,
+      "critical": true,
+      "repeats": 2,
+      "success_criteria": [
+        "The plan makes the security limitation and affected users visible, and calls for an appropriate deprecation or retirement decision rather than silently removing the capability.",
+        "The plan identifies the replacement or migration path, communicates with affected consumers, and updates exact membership/docs/evaluation artifacts; if continued use is unsafe, it recommends urgent retirement rather than an unnecessary grace period.",
+        "The agent recognizes removal as a breaking set change, calls for a major version increase, and preserves the historical released snapshot and reports.",
+        "The agent does not weaken or continue recommending the unsafe skill solely to preserve compatibility, and does not claim the removal or notice already occurred."
+      ]
+    }
+  ]
+}

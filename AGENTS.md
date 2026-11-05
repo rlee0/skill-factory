@@ -12,7 +12,7 @@ Run `python3 tools/check_repo.py` after changing a set or its skills. Use `pytho
 
 ### Issue tracker
 
-Issues and specs live as markdown files under `.scratch/`. See `docs/agents/issue-tracker.md`.
+Issues and specs live as GitHub issues. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

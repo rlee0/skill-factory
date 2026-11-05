@@ -8,11 +8,12 @@ Each set owns its source directory:
 sets/<set-name>/
 ├── set.json
 ├── README.md
-├── skills/<skill-name>/SKILL.md
-└── evals/<skill-name>/cases.json
+└── skills/<skill-name>/
+    ├── SKILL.md
+    └── evals/cases.json
 ```
 
-The `SKILL.md` and its optional `scripts/`, `references/`, and `assets/` use the Agent Skills specification. Set metadata belongs in `set.json`; do not add repository-specific required fields to every skill's frontmatter.
+Each skill owns its `evals/cases.json` alongside `SKILL.md` and optional `scripts/`, `references/`, and `assets/`. Skills use the Agent Skills specification. Set metadata belongs in `set.json`; do not add repository-specific required fields to every skill's frontmatter.
 
 The first-party pilot is linked into `.agents/skills/` for local OpenCode discovery. The set directory remains canonical, and release archives contain real skill files rather than symlinks.
 
@@ -26,6 +27,6 @@ The set README is the human-readable overview. Set names and skill names use low
 
 ## Compatibility and licensing
 
-Sets target portable Agent Skills directories. Runtime-specific behavior is allowed only when documented. State a runtime as tested only when its exact version and model are recorded in a passing evaluation report.
+Sets target portable Agent Skills directories by default. Add runtime-specific behavior only for a concrete need tied to a named runtime, and document the difference, its source, and its effect. Keep target runtimes distinct from tested runtimes: state a runtime as tested only when complete, passing behavioral results for its exact version and model are recorded in an evaluation report. A format check or another runtime's result is not evidence of compatibility; unsupported and unevaluated runtimes remain untested.
 
 Apache-2.0 is the default set license. A set may override it by bundling a set-local `LICENSE`. A skill may override the set default by naming a license file bundled inside that skill directory. The effective license must be explicit before public release; the consumer archive includes the set license and all member skill files.
