@@ -24,7 +24,6 @@
       "critical": false,
       "repeats": 1,
       "success_criteria": [
-        "The release skill is not loaded for a generic SemVer explanation request.",
         "The agent answers directly without preparing a set release or creating release artifacts."
       ]
     },
@@ -38,7 +37,7 @@
       "repeats": 2,
       "success_criteria": [
         "The agent blocks release despite the high aggregate score.",
-        "The response names `overdue-items-critical` and OpenCode v2.2.5, and gives a concrete remediation path.",
+        "The response names `overdue-items-critical` and OpenCode v2.2.5, requires diagnosing and correcting the failure, and then rerunning complete evidence for the exact candidate.",
         "The agent does not create or publish a remote release."
       ]
     },

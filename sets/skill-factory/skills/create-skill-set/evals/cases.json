@@ -51,8 +51,7 @@
       "repeats": 2,
       "success_criteria": [
         "The response recognizes approved inputs and hands off architecture design to `design-skill-set` rather than restarting discovery or remapping opportunities.",
-        "The response keeps architecture membership, responsibilities, handoffs, optional capabilities, and runtime assumptions pending explicit user review and approval before authoring starts.",
-        "The response leaves architecture pending until explicit user approval and does not claim architecture or release approval."
+        "The response leaves architecture unapproved, requires the user's explicit review and approval before authoring starts, and does not treat approval of the brief/map as architecture or release approval."
       ]
     },
     {
@@ -66,9 +65,15 @@
       "success_criteria": [
         "The response treats the domain brief, opportunity map, and architecture as explicitly approved, records that authoring occurred only after architecture approval, and does not restart completed phases or infer additional approvals.",
         "The response distinguishes supplied completed work from coordinator work, and does not claim an unperformed phase or approval.",
-        "The response records structural checks and the supplied safety review as complete, behavioral evaluation as pending, release as blocked, and maintenance as not begun.",
+        "The phase record marks the supplied structural checks as complete.",
+        "The phase record marks the supplied safety review as complete for the exact candidate.",
+        "Behavioral evaluation is marked blocked or pending because no run or report exists.",
+        "Release is marked not started or blocked because evaluation evidence and archive inspection are missing.",
+        "Maintenance is marked not started or not applicable because no release exists.",
         "The response does not treat structural checks or safety review as behavioral evidence, invent runtime results, or claim an archive, tag, or release was created.",
-        "The next handoff is evaluation; release remains gated until complete evidence and archive inspection exist, and maintenance is deferred until after release."
+        "The next handoff is evaluation.",
+        "Release remains gated until complete reviewed evidence and archive inspection exist.",
+        "Maintenance remains deferred because no release exists."
       ]
     }
   ]

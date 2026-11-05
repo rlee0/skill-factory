@@ -64,7 +64,8 @@
       "critical": true,
       "repeats": 2,
       "success_criteria": [
-        "The plan re-evaluates the changed behavior and affected cases against the same runtime without the candidate set, while leaving the runtime's own capabilities available.",
+        "The plan re-evaluates the changed behavior and affected cases on the previously claimed OpenCode runtime/model rather than reusing old-snapshot results.",
+        "Task comparisons use the same runtime without the candidate set while retaining that runtime's native capabilities.",
         "The agent treats runtime/model evidence independently, does not transfer old results or OpenCode results to Runtime B, and keeps claims pending or untested until complete results are reviewed.",
         "The agent does not invent results, runtime versions, models, or passing evidence."
       ]
