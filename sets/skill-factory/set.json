@@ -61,6 +61,8 @@
   "target_runtimes": [
     "OpenCode"
   ],
-  "tested_runtimes": [],
-  "evaluation_status": "pending"
+  "tested_runtimes": [
+    "OpenCode"
+  ],
+  "evaluation_status": "passed"
 }

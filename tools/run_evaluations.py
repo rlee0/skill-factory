@@ -370,16 +370,28 @@ def evaluate_case(
     members: list[dict[str, str]],
     timeout: int,
     source_root: Path,
+    artifact_dir: Path | None = None,
 ) -> dict[str, Any]:
+    def save_response(role: str, repeat_number: int, result: dict[str, Any]) -> None:
+        if artifact_dir is None:
+            return
+        # Raw traces are written only when a maintainer explicitly supplies a local artifact directory.
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        prefix = f"{skill_name}-{case['id']}-r{repeat_number}-{role}"
+        (artifact_dir / f"{prefix}.stdout").write_text(result["stdout"], encoding="utf-8")
+        (artifact_dir / f"{prefix}.stderr").write_text(result["stderr"], encoding="utf-8")
+
     run_evidence: list[dict[str, Any]] = []
     runtime_errors = 0
     for repeat_number in range(1, case["repeats"] + 1):
         treatment = execute_once(binary, model, case["prompt"], True, set_root, members, timeout, source_root)
+        save_response("treatment", repeat_number, treatment)
         target_loaded = skill_name in treatment["loaded_skills"]
         activated = target_loaded == case["expected_activation"]
         baseline_result = None
         if case["kind"] == "task":
             baseline_result = execute_once(binary, model, case["prompt"], False, set_root, members, timeout, source_root)
+            save_response("baseline", repeat_number, baseline_result)
 
         treatment_evidence = treatment.get("evidence_observed") is True
         baseline_evidence = baseline_result is None or baseline_result.get("evidence_observed") is True

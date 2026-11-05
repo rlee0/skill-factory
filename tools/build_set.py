@@ -19,6 +19,95 @@ except ImportError:  # Direct script execution.
     from evaluation_contract import RUBRIC_JUDGE_VOTES
 
 
+def validate_human_adjudication(
+    adjudication: Any,
+    treatment_scores: list[bool],
+    baseline_scores: list[bool] | None,
+    criteria_count: int,
+    has_baseline: bool,
+    case_id: str,
+    target: str,
+) -> tuple[list[bool], list[bool] | None, list[str]]:
+    errors: list[str] = []
+    if not isinstance(adjudication, dict):
+        return treatment_scores, baseline_scores, [
+            f"evaluation case {case_id!r} has malformed human adjudication for {target!r}"
+        ]
+    required = {
+        "reviewer", "reviewed_at", "evidence", "treatment_scores", "baseline_scores",
+        "rationale_by_criterion",
+    }
+    if set(adjudication) != required:
+        errors.append(f"evaluation case {case_id!r} has malformed human adjudication fields for {target!r}")
+    reviewer = adjudication.get("reviewer")
+    evidence = adjudication.get("evidence")
+    reviewed_at = adjudication.get("reviewed_at")
+    if not isinstance(reviewer, str) or not reviewer.strip():
+        errors.append(f"evaluation case {case_id!r} human adjudication must identify a reviewer for {target!r}")
+    if not isinstance(evidence, str) or not evidence.strip():
+        errors.append(f"evaluation case {case_id!r} human adjudication must cite reviewed evidence for {target!r}")
+    timestamp_valid = False
+    if isinstance(reviewed_at, str) and reviewed_at.strip():
+        try:
+            parsed = datetime.fromisoformat(reviewed_at.replace("Z", "+00:00"))
+            timestamp_valid = parsed.tzinfo is not None and parsed.utcoffset() is not None
+        except ValueError:
+            pass
+    if not timestamp_valid:
+        errors.append(f"evaluation case {case_id!r} human adjudication needs a timezone-aware reviewed_at for {target!r}")
+
+    human_treatment = adjudication.get("treatment_scores")
+    if (not isinstance(human_treatment, list) or len(human_treatment) != criteria_count
+            or not all(type(item) is bool for item in human_treatment)):
+        errors.append(f"evaluation case {case_id!r} human treatment scores are invalid for {target!r}")
+        human_treatment = None
+    human_baseline = adjudication.get("baseline_scores")
+    if has_baseline:
+        if (not isinstance(human_baseline, list) or len(human_baseline) != criteria_count
+                or not all(type(item) is bool for item in human_baseline)):
+            errors.append(f"task case {case_id!r} human baseline scores are invalid for {target!r}")
+            human_baseline = None
+    elif human_baseline is not None:
+        errors.append(f"trigger case {case_id!r} human adjudication must not include baseline scores for {target!r}")
+
+    rationale = adjudication.get("rationale_by_criterion")
+    if (not isinstance(rationale, dict) or set(rationale) != {"treatment", "baseline"}
+            or not isinstance(rationale.get("treatment"), dict)
+            or not isinstance(rationale.get("baseline"), dict)):
+        errors.append(f"evaluation case {case_id!r} human adjudication needs treatment/baseline rationale maps for {target!r}")
+        rationale = {"treatment": {}, "baseline": {}}
+
+    score_groups = [
+        ("treatment", treatment_scores, human_treatment, rationale["treatment"]),
+    ]
+    if has_baseline:
+        score_groups.append(("baseline", baseline_scores, human_baseline, rationale["baseline"]))
+    elif rationale["baseline"]:
+        errors.append(f"trigger case {case_id!r} human adjudication has unexpected baseline rationales for {target!r}")
+
+    for label, automatic, human, reason_map in score_groups:
+        if not isinstance(reason_map, dict):
+            errors.append(f"evaluation case {case_id!r} human {label} rationales are invalid for {target!r}")
+            continue
+        differences: set[str] = set()
+        if human is not None and len(automatic) == criteria_count:
+            differences = {
+                str(index + 1)
+                for index, (automated, adjudicated) in enumerate(zip(automatic, human))
+                if automated is not adjudicated
+            }
+        for key, reason in reason_map.items():
+            if (not isinstance(key, str) or not key.isdigit() or not 1 <= int(key) <= criteria_count
+                    or not isinstance(reason, str) or not reason.strip()):
+                errors.append(f"evaluation case {case_id!r} has invalid human {label} rationale for {target!r}")
+        for key in differences - set(reason_map):
+            errors.append(f"evaluation case {case_id!r} human {label} override for criterion {key} requires a rationale for {target!r}")
+
+    if errors or human_treatment is None or (has_baseline and human_baseline is None):
+        return treatment_scores, baseline_scores, errors
+    return human_treatment, human_baseline, []
+
+
 def validate_report(report_path: Path, set_name: str, version: str, targets: list[str]) -> list[str]:
     errors: list[str] = []
     if not report_path.is_file():
@@ -121,6 +210,7 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
             target_runs = 0
             safety_observed = False
             seen_repeats: set[int] = set()
+            effective_scores_by_repeat: dict[int, list[bool]] = {}
             for run in run_evidence:
                 if not isinstance(run, dict):
                     errors.append(f"evaluation case {case_id!r} has malformed repeat-level evidence for {target!r}")
@@ -209,6 +299,24 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                         ]
                         if baseline_scores != expected_baseline:
                             errors.append(f"task case {case_id!r} baseline scores do not match judge majority for {target!r}")
+                effective_treatment_scores = treatment_scores
+                effective_baseline_scores = baseline_scores
+                if "human_adjudication" in run:
+                    (
+                        effective_treatment_scores,
+                        effective_baseline_scores,
+                        adjudication_errors,
+                    ) = validate_human_adjudication(
+                        run["human_adjudication"],
+                        treatment_scores,
+                        baseline_scores,
+                        criteria_count,
+                        definition["kind"] == "task",
+                        case_id,
+                        target,
+                    )
+                    errors.extend(adjudication_errors)
+                effective_scores_by_repeat[repeat_number] = effective_treatment_scores
                 baseline_status = run.get("baseline_status")
                 baseline_ids = run.get("baseline_loaded_skill_ids")
                 baseline_scores = run.get("baseline_scores")
@@ -224,8 +332,9 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                         baseline_scores = []
                     elif case.get("status") == "passed":
                         policy = definition["comparison_policy"]
-                        treatment_score, baseline_score = sum(treatment_scores), sum(baseline_scores)
-                        if (not all(treatment_scores)
+                        treatment_score = sum(effective_treatment_scores)
+                        baseline_score = sum(effective_baseline_scores or [])
+                        if (not all(effective_treatment_scores)
                                 or (policy == "uplift" and treatment_score <= baseline_score)
                                 or (policy == "no-regression" and treatment_score < baseline_score)):
                             errors.append(f"task case {case_id!r} does not satisfy its rubric comparison for {target!r}")
@@ -241,11 +350,17 @@ def validate_report(report_path: Path, set_name: str, version: str, targets: lis
                 errors.append(f"evaluation case {case_id!r} loaded skill summary does not match repeat evidence for {target!r}")
             if runs_with_target != target_runs:
                 errors.append(f"evaluation case {case_id!r} target-skill count does not match repeat evidence for {target!r}")
-            if case.get("status") == "passed" and any(
-                (run.get("activation_passed") is not True or not all(run.get("treatment_scores") or []))
-                for run in run_evidence if isinstance(run, dict)
-            ):
-                errors.append(f"evaluation case {case_id!r} has a failed repeat in a passing result for {target!r}")
+            if case.get("status") == "passed":
+                for run in run_evidence:
+                    if not isinstance(run, dict):
+                        continue
+                    effective_scores = effective_scores_by_repeat.get(
+                        run.get("repeat"), run.get("treatment_scores")
+                    )
+                    if (run.get("activation_passed") is not True
+                            or not isinstance(effective_scores, list) or not all(effective_scores)):
+                        errors.append(f"evaluation case {case_id!r} has a failed repeat in a passing result for {target!r}")
+                        break
             safety_regression = case.get("safety_regression")
             if not isinstance(safety_regression, bool):
                 errors.append(f"evaluation case {case_id!r} must record safety_regression for {target!r}")

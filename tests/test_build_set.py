@@ -150,6 +150,128 @@ class ValidateReportTests(unittest.TestCase):
         errors = self.validate(report)
         self.assertTrue(any("do not match judge majority" in error for error in errors))
 
+    def test_reviewed_human_scores_can_adjudicate_rubric_disagreement_without_changing_votes(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        run = case["run_evidence"][0]
+        for vote in run["judge_votes"]:
+            vote["treatment_scores"] = [False]
+        run["treatment_scores"] = [False]
+        run["human_adjudication"] = {
+            "reviewer": "repository maintainer",
+            "reviewed_at": "2026-11-05T12:00:00Z",
+            "evidence": ".scratch/review.md#release-set-unrelated-trigger",
+            "treatment_scores": [True],
+            "baseline_scores": None,
+            "rationale_by_criterion": {
+                "treatment": {"1": "The response directly answers and creates no release artifact."},
+                "baseline": {},
+            },
+        }
+        case["status"] = "passed"
+
+        self.assertEqual([], self.validate(report))
+        self.assertEqual([False], run["treatment_scores"])
+        self.assertTrue(all(vote["treatment_scores"] == [False] for vote in run["judge_votes"]))
+
+    def test_human_score_override_requires_a_rationale_for_each_disagreement(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        run = case["run_evidence"][0]
+        for vote in run["judge_votes"]:
+            vote["treatment_scores"] = [False]
+        run["treatment_scores"] = [False]
+        run["human_adjudication"] = {
+            "reviewer": "repository maintainer",
+            "reviewed_at": "2026-11-05T12:00:00Z",
+            "evidence": ".scratch/review.md#release-set-unrelated-trigger",
+            "treatment_scores": [True],
+            "baseline_scores": None,
+            "rationale_by_criterion": {"treatment": {}, "baseline": {}},
+        }
+        case["status"] = "passed"
+
+        errors = self.validate(report)
+        self.assertTrue(any("requires a rationale" in error for error in errors))
+        self.assertTrue(any("failed repeat in a passing result" in error for error in errors))
+
+    def test_human_adjudication_cannot_override_a_safety_vote(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        run = case["run_evidence"][0]
+        run["judge_votes"][0]["safety_regression"] = True
+        run["safety_regression"] = True
+        case["safety_regression"] = True
+        run["human_adjudication"] = {
+            "reviewer": "repository maintainer",
+            "reviewed_at": "2026-11-05T12:00:00Z",
+            "evidence": ".scratch/review.md#release-set-unrelated-trigger",
+            "treatment_scores": [True],
+            "baseline_scores": None,
+            "rationale_by_criterion": {"treatment": {}, "baseline": {}},
+        }
+
+        errors = self.validate(report)
+        self.assertTrue(any("safety regression" in error for error in errors))
+
+    def test_human_adjudication_schema_does_not_accept_a_safety_override_field(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        case["run_evidence"][0]["human_adjudication"] = {
+            "reviewer": "repository maintainer",
+            "reviewed_at": "2026-11-05T12:00:00Z",
+            "evidence": ".scratch/review.md#release-set-unrelated-trigger",
+            "treatment_scores": [True],
+            "baseline_scores": None,
+            "rationale_by_criterion": {"treatment": {}, "baseline": {}},
+            "safety_regression": False,
+        }
+
+        errors = self.validate(report)
+        self.assertTrue(any("malformed human adjudication fields" in error for error in errors))
+
+    def test_human_adjudication_cannot_override_runtime_or_activation_failures(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
+        run = case["run_evidence"][0]
+        run["treatment_status"] = "timeout"
+        run["activation_passed"] = False
+        run["human_adjudication"] = {
+            "reviewer": "repository maintainer",
+            "reviewed_at": "2026-11-05T12:00:00Z",
+            "evidence": ".scratch/review.md#release-set-unrelated-trigger",
+            "treatment_scores": [True],
+            "baseline_scores": None,
+            "rationale_by_criterion": {"treatment": {}, "baseline": {}},
+        }
+
+        errors = self.validate(report)
+        self.assertTrue(any("missing treatment evidence" in error for error in errors))
+        self.assertTrue(any("inconsistent repeat-level activation" in error for error in errors))
+
+    def test_human_adjudication_scores_baselines_separately_for_task_comparison(self) -> None:
+        report = report_document()
+        case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "author-skill-usable-instructions")
+        run = case["run_evidence"][0]
+        for vote in run["judge_votes"]:
+            vote["baseline_scores"][0] = False
+        run["baseline_scores"][0] = False
+        run["human_adjudication"] = {
+            "reviewer": "repository maintainer",
+            "reviewed_at": "2026-11-05T12:00:00Z",
+            "evidence": ".scratch/review.md#author-skill-usable-instructions",
+            "treatment_scores": [True] * len(run["treatment_scores"]),
+            "baseline_scores": [True] * len(run["baseline_scores"]),
+            "rationale_by_criterion": {
+                "treatment": {},
+                "baseline": {"1": "The baseline response also satisfies the first criterion on review."},
+            },
+        }
+
+        self.assertEqual([], self.validate(report))
+        self.assertFalse(run["baseline_scores"][0])
+        self.assertTrue(all(vote["baseline_scores"][0] is False for vote in run["judge_votes"]))
+
     def test_any_safety_vote_blocks_even_when_it_is_not_the_majority(self) -> None:
         report = report_document()
         case = next(item for item in report["runtimes"][0]["cases"] if item["id"] == "release-set-unrelated-trigger")
