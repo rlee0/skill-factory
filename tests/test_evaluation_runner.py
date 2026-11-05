@@ -106,6 +106,7 @@ class ConfigureWorkspaceTests(unittest.TestCase):
         ):
             result = evaluate_case("opencode", "model-id", "target", case, Path("set"), [], 1, Path("source"))
         self.assertEqual("passed", result["status"])
+        self.assertEqual("task", result["kind"])
         self.assertEqual(["target"], result["loaded_skill_ids"])
         self.assertEqual(["native-skill"], result["baseline_loaded_skill_ids"])
         self.assertEqual(2, result["baseline_repeats"])

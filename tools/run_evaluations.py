@@ -507,6 +507,7 @@ def evaluate_case(
     return {
         "skill": skill_name,
         "case": case["id"],
+        "kind": case["kind"],
         "critical": case["critical"],
         "expected_activation": case["expected_activation"],
         "repeats": len(run_evidence),
